@@ -1,30 +1,39 @@
 ---
-title: "The AI Odyssey: Sharing 4 Years of Generative Wisdom"
+title: "The AI Odyssey: 4 Years of Lessons in Generative AI"
 date: "2026-04-21"
 tags: ["generative-ai", "chatgpt", "journey"]
 ---
 
-Welcome to the digital log of my journey through the most transformative era in computing history. 
+Late 2022 changed everything. When ChatGPT launched, it wasn't just a new product — it was the moment the general public got a clear, tangible sense of what AI could do. Suddenly, everyone was a prompt engineer.
 
-Late 2022 marked a turning point. The birth of ChatGPT didn't just give us a new tool; it unlocked a new way of thinking, creating, and problem-solving. It was the moment the general public finally saw the ghost in the machine.
+I've been building with and writing about Generative AI ever since. Four years later, the landscape looks completely different — and I've collected more lessons, mistakes, and insights than I can keep to myself.
 
-Since that moment, I've been deep in the trenches of Generative AI. From the early days of GPT-3 prompt engineering to the sophisticated multimodal agents we see today in 2026, the progress has been nothing short of breathtaking.
+This blog is where I share them.
 
-## Why This Blog?
+## What You'll Find Here
 
-My goal is simple: **to share everything I've learned.**
+This isn't a surface-level blog. Every post is grounded in real experience — things I've tested, broken, fixed, and shipped.
 
-The world of AI moves fast—so fast that what was cutting-edge yesterday is often legacy today. Over the past four years, I've curated a wealth of knowledge that I want to distill and share here.
+Here's the territory we'll cover:
 
-### What to Expect:
+### LLM Architecture
+Understanding *why* language models behave the way they do. We'll go beyond "it predicts the next token" and dig into attention mechanisms, context windows, fine-tuning tradeoffs, and the practical implications of each architectural choice.
 
-*   **LLM Architectures**: Understanding the "brain" beneath the surface.
-*   **Prompt Engineering & Orchestration**: Mastering the art of communication with machines.
-*   **The Multimodal Shift**: How AI learned to see, hear, and interact in 2024 and 2025.
-*   **Real-World Agents**: Moving from "chat" to "do".
+### Prompt Engineering & Orchestration
+Prompting is a skill. We'll cover the fundamentals — zero-shot vs. few-shot, chain-of-thought reasoning, structured outputs — and then move into orchestration patterns: how to chain models, tools, and agents into workflows that actually work in production.
+
+### The Multimodal Shift
+2024 and 2025 saw AI go truly multimodal. Models now see, transcribe, and reason across images, audio, and documents. We'll explore what that unlocks — and where it still falls short.
+
+### Agentic AI
+The most exciting and least understood frontier. We'll move from "chat" to "do" — autonomous agents that plan, use tools, browse the web, write code, and execute tasks with minimal human intervention.
 
 ![The AI Journey](./assets/ai-journey.png)
 
-This space will serve as my notebook, my laboratory, and my classroom. I believe that knowledge shared is knowledge doubled. Whether you're here to understand the basics or dive into the mathematical nuances of transformer blocks, I'm glad to have you on this journey.
+## Who This Is For
 
-Let's explore the future together.
+Whether you're just starting to explore AI or you're a developer looking to sharpen your understanding of the underlying systems, there's something here for you. I write for curious people — not just for engineers.
+
+The goal is always the same: **make complex ideas clear, practical, and actionable.**
+
+Let's get into it.

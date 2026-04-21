@@ -1,62 +1,117 @@
 ---
-title: "Claude Code 2026: The Ultimate Top 30 Skills, Commands, and MCPs"
+title: "Claude Code in 2026: The 30 Skills, Commands, and MCPs That Actually Matter"
 date: "2026-04-21"
 tags: ["claude-code", "productivity", "dev-tools", "mcp", "ai-agents"]
 ---
 
 ![Claude Code 2026](./assets/claude-code-2026.png)
 
-The year is 2026, and the terminal isn't just for commands anymore—it's for conversations. Claude Code has evolved from a smart autocomplete to a full-blown agentic partner. If you aren't leveraging the right tools, you're building in the slow lane.
+The terminal used to be a place for commands. In 2026, it's a place for conversations — and Claude Code has evolved from a smart autocomplete into a full agentic development partner.
 
-Today, we’re diving into the **Top 30** most essential skills, slash commands, and Model Context Protocol (MCP) servers that top-tier developers are using right now to stay ahead.
-
-## 1. The Core Arsenal: Built-in Slash Commands
-
-These are your bread and butter. If you're not using these daily, you're missing out on the primary power of Claude Code.
-
-*   **/simplify** — The undisputed #1. Over-engineered code is the enemy; this command trims the fat and auto-fixes quality issues. Developers call this their most used daily tool.
-*   **/review** — Your personalized PR guardian. It catches bugs before they even touch your CI/CD.
-*   **/debug** — No more manual print statements. Systematic troubleshooting that actually finds the root cause.
-*   **/batch** — Need to rename a variable across 50 files? This spawns sub-agents to do the heavy lifting in parallel.
-*   **/loop** — Iterative excellence. It keeps going until your task meets the quality criteria.
-
-*Other essentials:* **/mcp** (integration management), **/context** (token usage breakdown), **/init** (session initialization), **/claude-api** (quickstart guides), and **/compact** (memory management).
-
-## 2. Powering Up: Community & Official Skills
-
-Skills are specialized workflows that turn a general AI into a domain expert. They are often invoked with `/skill-name`.
-
-*   **frontend-design** — One of the most installed skills. It produces production-grade, non-generic UIs that wow users.
-*   **Superpowers** — The Swiss Army Knife for features. Planning, sub-agents, TDD, and structured development.
-*   **Browser Use / Playwright** — Real-world browser automation, scraping, and UI testing.
-*   **/security-review** — Scans for vulnerabilities and enforces best practices.
-*   **Sequential Thinking** — Forces Claude to slow down and use deeper reasoning chains for complex problems.
-
-*Don't forget:* **Document Skills** (PDF/Excel/Office), **Vercel React Best Practices**, **mcp-builder**, and **Firecrawl** for reliable web scraping.
-
-## 3. The Connectors: Essential MCP Servers
-
-MCPs allow Claude to securely interact with your local environment and third-party services.
-
-*   **GitHub MCP** — Read/write repos, create PRs, and manage issues. Universally loved.
-*   **Linear MCP** — Sync your tasks seamlessly with agent-first workflows.
-*   **Playwright / Browser MCP** — Full browser control for testing and automation.
-*   **Filesystem / Shell MCP** — Safe local file and terminal command execution.
-*   **Notion / Google Workspace** — Pulling data from docs, spreadsheets, and tasks.
-*   **dbt Agent Skills** — Powerful CLI commands and model building for data engineers.
-*   **Composio** — The gateway to over 850+ SaaS app integrations.
-
-*Pro integrations:* **Valyu** (real-time web search), **Beans/Beads** (local issue tracking), and custom **SSH/Hive** servers.
+But with that power comes a sprawling toolkit. This post cuts through the noise and covers the **30 most useful** skills, slash commands, and MCP servers — organized so you know where to start and what to add as you grow.
 
 ---
 
-### 💡 Quick Tips from the Power Users
+## Part 1: Built-in Slash Commands
 
-1.  **Start with the Built-ins**: Master `/simplify`, `/debug`, and `/batch` first. They ship with Claude Code and offer the highest immediate ROI.
-2.  **Install 'Superpowers' and 'frontend-design'**: These are the first two things most pros add to their setup for massive productivity jumps.
-3.  **Monitor Your Context**: Use `/context` frequently. Avoid "token bloat" by keeping only the necessary MCPs active.
-4.  **Customization is Key**: Skills live as Markdown files. You can build your own, share them via Git, and automate your specific team workflows.
+These ship with Claude Code and should be the foundation of your daily workflow. Learn these first.
 
-**Ready to level up?** The combination of these tools turns Claude Code from a chat interface into a full-scale agentic environment. Most devs rely on 8–12 of these regularly, but knowing the full 30 gives you the edge.
+### The Essential Five
 
-*What's your favorite Claude Code skill? Let us know!*
+| Command | What It Does |
+| :--- | :--- |
+| `/simplify` | Reviews changed code for over-engineering and auto-fixes quality issues. The single highest-ROI command in the toolkit. |
+| `/review` | Runs a full code review on your current diff — catches bugs before CI does. |
+| `/debug` | Systematic root-cause analysis. No more print-statement debugging. |
+| `/batch` | Spawns parallel sub-agents for large-scale tasks (renaming, refactoring across many files). |
+| `/loop` | Runs a task iteratively until it meets your quality criteria. Great for test-driven workflows. |
+
+### Also Worth Knowing
+
+- `/init` — Bootstraps a session with full codebase context.
+- `/context` — Shows token usage breakdown. Use this to stay lean and avoid bloat.
+- `/compact` — Compresses memory when context gets heavy.
+- `/claude-api` — Quickstart guides and Claude API integration help.
+- `/mcp` — Manage which MCP servers are active in your current session.
+
+---
+
+## Part 2: Skills (Specialized Workflows)
+
+Skills are community-built or official workflow extensions — essentially Markdown files that turn Claude into a domain expert. They're invoked like slash commands and can be version-controlled, shared, and customized.
+
+### High-Impact Skills
+
+**`/simplify`** (also a built-in)
+Arguably the most-used skill among power users. Merciless about removing unnecessary complexity. Run it before every PR.
+
+**`frontend-design`**
+Produces production-quality UIs — not generic boilerplate. One of the most-installed community skills for frontend developers.
+
+**`Superpowers`**
+A meta-skill that packages planning, TDD, sub-agent orchestration, and structured development into a single workflow. A strong first install for any serious project.
+
+**`/security-review`**
+Scans your changes for common vulnerabilities (injection, insecure dependencies, exposed secrets) and enforces best practices before code ships.
+
+**`Sequential Thinking`**
+Forces Claude to reason step-by-step through complex problems rather than jumping to answers. Especially useful for architecture decisions and debugging hard bugs.
+
+### More Specialized Skills
+
+- **Browser Use / Playwright** — Real browser automation for scraping, UI testing, and web-based workflows.
+- **Document Skills** — Work with PDFs, Excel files, and Office documents directly in your session.
+- **Vercel React Best Practices** — Opinionated patterns for React + Vercel deployments.
+- **mcp-builder** — Scaffold and publish custom MCP servers.
+- **Firecrawl** — Reliable web scraping with JavaScript rendering support.
+
+---
+
+## Part 3: MCP Servers (External Integrations)
+
+MCPs let Claude securely interact with your local environment and external services. They're the connective tissue between Claude and the rest of your stack.
+
+### Core Development MCPs
+
+| MCP | What It Connects |
+| :--- | :--- |
+| **GitHub MCP** | Read/write repos, create PRs, manage issues — the most universally installed MCP. |
+| **Linear MCP** | Sync tasks and issues directly with Claude's agentic workflows. |
+| **Playwright / Browser MCP** | Full browser control for testing, scraping, and automation. |
+| **Filesystem / Shell MCP** | Safe local file access and terminal execution with permission controls. |
+
+### Productivity & Data MCPs
+
+- **Notion / Google Workspace** — Pull context from docs, spreadsheets, and task lists.
+- **dbt Agent Skills** — CLI commands and model building for data engineers.
+- **Composio** — Gateway to 850+ SaaS integrations via a single MCP.
+
+### Research & Specialized MCPs
+
+- **Valyu** — Real-time web search grounded in current data.
+- **Beans / Beads** — Lightweight local issue tracking for offline or air-gapped environments.
+- **Custom SSH / Hive Servers** — For teams that need Claude to interact with remote infrastructure.
+
+---
+
+## How to Approach This as a New User
+
+You don't need all 30. Here's a practical onboarding sequence:
+
+**Week 1 — Master the built-ins.**
+Focus entirely on `/simplify`, `/debug`, `/review`, and `/context`. These give you the highest return for zero setup.
+
+**Week 2 — Add two skills.**
+Install `Superpowers` and `frontend-design` (or `security-review` if security is your priority). These are the skills most developers reach for first.
+
+**Week 3 — Connect your stack.**
+Add the **GitHub MCP** and one other MCP relevant to your workflow (Linear, Notion, Playwright). Connecting Claude to your actual tools is where the productivity jump becomes real.
+
+**Ongoing — Monitor context.**
+Use `/context` regularly. Every active MCP consumes tokens. Keep only what you're actively using.
+
+---
+
+The full list of 30 exists because different developers have different needs. But the path is the same for everyone: start narrow, go deep, and expand only when you feel the friction of what's missing.
+
+*What's in your Claude Code setup? The best workflows often come from combining tools in unexpected ways.*
