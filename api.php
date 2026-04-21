@@ -4,29 +4,29 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
 $content_dir = __DIR__ . '/content/posts';
-$files = glob($content_dir . '/*.md');
+$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($content_dir));
 $posts = [];
 
-if (!$files) { 
-    echo json_encode([]); 
-    exit; 
-}
-
-foreach ($files as $file) {
-    if (!is_file($file)) continue;
+foreach ($iterator as $file) {
+    if ($file->isDir() || $file->getExtension() !== 'md') continue;
     
-    $content = file_get_contents($file);
+    $filePath = $file->getPathname();
+    $content = file_get_contents($filePath);
     $title = 'Untitled'; 
     $date = 'Unknown Date'; 
     $tags = [];
     $markdown_body = $content;
+
+    // Extract category from folder name (relative to content/posts)
+    $relativeDir = str_replace($content_dir, '', dirname($filePath));
+    $rawCategory = trim($relativeDir, DIRECTORY_SEPARATOR);
+    $category = $rawCategory ? str_replace(DIRECTORY_SEPARATOR, ' / ', $rawCategory) : 'Uncategorized';
 
     // Extract YAML frontmatter block
     if (preg_match('/^---\s*(.*?)\s*---\s*(.*)/s', $content, $matches)) {
         $frontmatter   = $matches[1];
         $markdown_body = $matches[2];
         
-        // Improved parsing to handle more variations
         if (preg_match('/title:\s*"(.*?)"/', $frontmatter, $m)) {
             $title = $m[1];
         } elseif (preg_match('/title:\s*(.*)/', $frontmatter, $m)) {
@@ -46,10 +46,11 @@ foreach ($files as $file) {
     }
 
     $posts[] = [
-        'id'          => md5(basename($file)),
-        'slug'        => basename($file, '.md'),
+        'id'          => md5(basename($filePath)),
+        'slug'        => basename($filePath, '.md'),
         'title'       => $title,
         'date'        => $date,
+        'category'    => $category,
         'tags'        => array_values(array_filter($tags)),
         'rawMarkdown' => trim($markdown_body),
     ];

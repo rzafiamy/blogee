@@ -1,26 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMANITY LAST BLOG // 2026</title>
+    <title>HUMANITY LAST BLOG BLOG // 2026</title>
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
+
 <body>
     <div class="layout-wrapper">
         <header class="main-header">
             <div class="header-inner container">
                 <div class="brand">
                     <div class="brand-box"></div>
-                    <h1>HUMANITY LAST</h1>
+                    <h1>HUMANITY LAST BLOG</h1>
                 </div>
-                <nav class="nav-menu">
-                    <a href="#" class="active">/HOME</a>
-                    <a href="#">/ARCHIVE</a>
-                    <a href="#">/SYSTEM</a>
-                    <a href="#">/ABOUT</a>
-                </nav>
             </div>
         </header>
 
@@ -38,13 +34,13 @@
                     <section class="sidebar-section">
                         <h3 class="section-title">SEARCH DATABASE</h3>
                         <div class="search-wrap">
-                            <input type="text" id="search-input" placeholder="Keyword skip...">
+                            <input type="text" id="search-input" placeholder="[ SCAN_KEYWORD ]">
                             <span class="cursor">_</span>
                         </div>
                     </section>
-                    
+
                     <section class="sidebar-section">
-                        <h3 class="section-title">CATEGORIES</h3>
+                        <h3 class="section-title">▣ CATEGORIES</h3>
                         <ul class="cat-list" id="category-list">
                             <li><a href="#">/development</a></li>
                             <li><a href="#">/design</a></li>
@@ -53,14 +49,14 @@
                     </section>
 
                     <section class="sidebar-section">
-                        <h3 class="section-title">LATEST SCANS</h3>
+                        <h3 class="section-title">◈ LATEST_POSTS</h3>
                         <div id="latest-list" class="latest-scans">
                             <!-- Populated by JS -->
                         </div>
                     </section>
 
                     <section class="sidebar-section system-status">
-                        <h3 class="section-title">SYSTEM STATUS</h3>
+                        <h3 class="section-title">⚙ SYSTEM_STATUS</h3>
                         <p>NETWORK: OK</p>
                         <p>UPTIME: 99.9%</p>
                         <p>LOCATION: SECTOR-7</p>
@@ -71,7 +67,7 @@
 
         <footer class="main-footer">
             <div class="container footer-inner">
-                <p>&copy; 2026 HUMANITY LAST // SECURE CONNECTION ESTABLISHED</p>
+                <p>&copy; 2026 HUMANITY LAST BLOG // SECURE CONNECTION ESTABLISHED</p>
                 <div class="footer-links">
                     <a href="#">RSS</a>
                     <a href="#">SOURCE</a>
@@ -84,7 +80,7 @@
     <!-- MODAL -->
     <div id="post-modal" class="modal">
         <div class="modal-content">
-            <button class="close-modal">ESC_TO_CLOSE</button>
+            <button class="close-modal">✖ TERMINATE_SESSION</button>
             <div id="modal-body"></div>
         </div>
     </div>
@@ -112,12 +108,12 @@
                 <article class="post-item">
                     <header class="item-header">
                         <span class="post-date">${post.date}</span>
-                        <span class="post-tag">/${post.tags[0] || 'void'}</span>
+                        <span class="post-tag">▣ ${post.category}</span>
                     </header>
                     <h2 class="post-title"><a href="#" onclick="openPost('${post.id}')">${post.title}</a></h2>
                     <p class="post-excerpt">${post.rawMarkdown.substring(0, 180)}...</p>
                     <footer class="item-footer">
-                        <a href="#" class="read-more" onclick="openPost('${post.id}')">READ_LOG ></a>
+                        <a href="#" class="read-more" onclick="openPost('${post.id}')">▶ ACCESS_LOG</a>
                     </footer>
                 </article>
             `).join('');
@@ -135,9 +131,9 @@
 
         function renderCategories(posts) {
             const list = document.getElementById('category-list');
-            const cats = [...new Set(posts.flatMap(p => p.tags))];
+            const cats = [...new Set(posts.map(p => p.category))];
             if (cats.length > 0) {
-                list.innerHTML = cats.map(c => `<li><a href="#">/${c.toLowerCase()}</a></li>`).join('');
+                list.innerHTML = cats.map(c => `<li><a href="#">/ ${c.toLowerCase()}</a></li>`).join('');
             }
         }
 
@@ -148,11 +144,11 @@
             const body = document.getElementById('modal-body');
             body.innerHTML = `
                 <header class="modal-post-header">
-                    <span class="date">${post.date} // ID:${post.id.substring(0,8)}</span>
+                    <span class="date">${post.date}</span>
                     <h1>${post.title}</h1>
                 </header>
                 <div class="modal-article-content">
-                    ${marked.parse(post.rawMarkdown.replace(/src="\.\/assets\/([^"]+)"/g, 'src="/content/assets/$1"'))}
+                    ${marked.parse(post.rawMarkdown).replace(/(src|href)="\.\/assets\/([^"]+)"/g, '$1="/content/assets/$2"')}
                 </div>
             `;
             modal.style.display = "block";
@@ -160,8 +156,8 @@
         }
 
         document.querySelector('.close-modal').onclick = () => {
-             document.getElementById('post-modal').style.display = "none";
-             document.body.style.overflow = "auto";
+            document.getElementById('post-modal').style.display = "none";
+            document.body.style.overflow = "auto";
         };
 
         window.onclick = (e) => {
@@ -176,4 +172,5 @@
         document.addEventListener('DOMContentLoaded', fetchPosts);
     </script>
 </body>
+
 </html>
