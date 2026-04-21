@@ -1,0 +1,48 @@
+# Nginx configuration snippet for Webhook Blog
+# Add this to your server block in /etc/nginx/sites-available/your-domain
+
+server {
+    listen 80;
+    server_name yourdomain.com;
+    root /var/www/blogee;
+    index index.html;
+
+    # RULE 1: Block access to all hidden files (dotfiles)
+    # This protects .env, .git, .htaccess, etc.
+    location ~ /\.(?!well-known) {
+        deny all;
+        return 404;
+    }
+
+    # RULE 2: Disable PHP execution in the content/ directory
+    # Prevents a compromised or malicious commit from executing PHP
+    location ^~ /content/ {
+        location ~ \.(php|phtml|php8\.3)$ {
+            deny all;
+        }
+        try_files $uri $uri/ =404;
+    }
+
+    # RULE 3: Rate limit webhook endpoint
+    location = /webhook.php {
+        # Note: You must define the 'webhook' zone in the http block
+        limit_req zone=webhook burst=5 nodelay;
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    # RULE 4: Standard PHP-FPM processing for other .php files
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+
+# Rate limiting zone definition (add this to /etc/nginx/nginx.conf inside http {} block)
+# limit_req_zone $binary_remote_addr zone=webhook:10m rate=10r/m;

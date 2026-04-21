@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEBHOOK BLOG // 2026</title>
+    <meta name="description" content="A high-performance, headless CMS blog powered by GitHub webhooks and PHP 8.3.">
+    <link rel="stylesheet" href="index.css">
+    <!-- Marked JS for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="crt-container">
+        <header>
+            <div class="container">
+                <h1>WEBHOOK.BLOG</h1>
+                <p class="subtitle">Headless CMS // Modern Retro v1.0</p>
+            </div>
+        </header>
+
+        <main id="app">
+            <div class="loading">
+                <div class="pixel-loader"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 // POWERED BY GIT PULL // ENCRYPTED WHitEBOARD</p>
+        </footer>
+    </div>
+
+    <script>
+        async function fetchPosts() {
+            try {
+                const response = await fetch('api.php');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const posts = await response.json();
+                renderPosts(posts);
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+                document.getElementById('app').innerHTML = `
+                    <div class="post-card">
+                        <h2 class="post-title">STATUS: ERROR 404</h2>
+                        <p>FAILED TO CONNECT TO API. CHECK LOGS.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderPosts(posts) {
+            const app = document.getElementById('app');
+            if (posts.length === 0) {
+                app.innerHTML = '<div class="post-card"><p>SYSTEM STATUS: NO POSTS FOUND IN /content/posts/</p></div>';
+                return;
+            }
+
+            app.innerHTML = posts.map(post => `
+                <article class="post-card" id="${post.id}">
+                    <span class="post-date">[ ${post.date} ]</span>
+                    <h2 class="post-title">${post.title}</h2>
+                    <div class="post-content">
+                        ${parseMarkdown(post.rawMarkdown)}
+                    </div>
+                    <div class="tags">
+                        ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function parseMarkdown(md) {
+            // Using marked.js for core parsing
+            let html = marked.parse(md);
+
+            // 5.4 Step 4 — Frontend Markdown Image Handler (as specified in docx)
+            // Converts: ![alt](./assets/filename.png)
+            // To:       <img src='/content/assets/filename.png' alt='alt' ... />
+            html = html.replace(
+                /src="\.\/assets\/([^"]+)"/g,
+                'src="/content/assets/$1"'
+            );
+
+            return html;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', fetchPosts);
+    </script>
+</body>
+</html>
