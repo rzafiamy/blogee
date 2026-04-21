@@ -19,8 +19,17 @@ if (!hash_equals($expected_signature, $signature)) {
 
 // 3. Execute HTTPS Git Pull (no credentials needed for public repo)
 $safe_dir = escapeshellarg($repo_dir);
+
+if (!is_dir($repo_dir)) {
+    $error_msg = "Error: Content directory not found at {$repo_dir}. Please clone your content repo first.";
+    file_put_contents(__DIR__ . '/webhook-pull.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+    http_response_code(500);
+    die($error_msg);
+}
+
 // Ensure we are on the main branch and pull latest
 $output   = shell_exec("cd {$safe_dir} && git checkout main && git pull origin main 2>&1");
+
 
 // 4. Append result to log file
 file_put_contents(

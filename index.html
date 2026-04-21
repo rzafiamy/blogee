@@ -104,6 +104,19 @@
 
         function renderPosts(posts) {
             const app = document.getElementById('app');
+            if (posts.length === 0) {
+                app.innerHTML = `
+                    <article class="post-item">
+                        <header class="item-header">
+                            <span class="post-date">ERR_NO_DATA</span>
+                            <span class="post-tag">▣ SYSTEM</span>
+                        </header>
+                        <h2 class="post-title">NO ACCESS LOGS FOUND</h2>
+                        <p class="post-excerpt">The content database appears to be empty or not yet synchronized. Please check your source repository and webhook configuration.</p>
+                    </article>
+                `;
+                return;
+            }
             app.innerHTML = posts.map(post => `
                 <article class="post-item">
                     <header class="item-header">
@@ -118,6 +131,7 @@
                 </article>
             `).join('');
         }
+
 
         function renderLatest(posts) {
             const list = document.getElementById('latest-list');

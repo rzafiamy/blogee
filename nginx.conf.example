@@ -27,14 +27,14 @@ server {
     location = /webhook.php {
         # Note: You must define the 'webhook' zone in the http block
         limit_req zone=webhook burst=5 nodelay;
-        include fastcgi_params;
+        include /etc/nginx/fastcgi_params;
         fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     }
 
     # RULE 4: Standard PHP-FPM processing for other .php files
     location ~ \.php$ {
-        include fastcgi_params;
+        include /etc/nginx/fastcgi_params;
         fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     }
@@ -44,5 +44,7 @@ server {
     }
 }
 
-# Rate limiting zone definition (add this to /etc/nginx/nginx.conf inside http {} block)
+# CRITICAL: Rate limiting zone definition
+# You MUST add this line to your MAIN /etc/nginx/nginx.conf file, INSIDE the 'http { ... }' block.
+# The ':10m' part specifies the memory size; omitting it will cause a 'zero size shared memory' error.
 # limit_req_zone $binary_remote_addr zone=webhook:10m rate=10r/m;
