@@ -6,11 +6,6 @@
 webhook-pull.log
 *.log
 
-# Content directory (this is cloned separately on the server)
-# Use !content/posts/sample.md if you want to keep placeholders, 
-# but usually, content is in its own repo as per your spec.
-content/
-
 # System files
 .DS_Store
 Thumbs.db
