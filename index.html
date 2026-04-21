@@ -3,87 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WEBHOOK BLOG // 2026</title>
-    <meta name="description" content="A high-performance, headless CMS blog powered by GitHub webhooks and PHP 8.3.">
+    <title>HUMANITY LAST BLOG // 2026</title>
     <link rel="stylesheet" href="index.css">
-    <!-- Marked JS for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <div class="crt-container">
-        <header>
-            <div class="container">
-                <h1>WEBHOOK.BLOG</h1>
-                <p class="subtitle">Headless CMS // Modern Retro v1.0</p>
+    <div class="layout-wrapper">
+        <header class="main-header">
+            <div class="header-inner container">
+                <div class="brand">
+                    <div class="brand-box"></div>
+                    <h1>HUMANITY LAST</h1>
+                </div>
+                <nav class="nav-menu">
+                    <a href="#" class="active">/HOME</a>
+                    <a href="#">/ARCHIVE</a>
+                    <a href="#">/SYSTEM</a>
+                    <a href="#">/ABOUT</a>
+                </nav>
             </div>
         </header>
 
-        <main id="app">
-            <div class="loading">
-                <div class="pixel-loader"></div>
-            </div>
-        </main>
+        <div class="main-content container mt-gap">
+            <div class="content-grid">
+                <!-- MAIN FEED -->
+                <main id="app">
+                    <div class="loading">
+                        <div class="pixel-loader"></div>
+                    </div>
+                </main>
 
-        <footer>
-            <p>&copy; 2026 // POWERED BY GIT PULL // ENCRYPTED WHitEBOARD</p>
+                <!-- MINIMALIST SIDEBAR -->
+                <aside class="sidebar">
+                    <section class="sidebar-section">
+                        <h3 class="section-title">SEARCH DATABASE</h3>
+                        <div class="search-wrap">
+                            <input type="text" id="search-input" placeholder="Keyword skip...">
+                            <span class="cursor">_</span>
+                        </div>
+                    </section>
+                    
+                    <section class="sidebar-section">
+                        <h3 class="section-title">CATEGORIES</h3>
+                        <ul class="cat-list" id="category-list">
+                            <li><a href="#">/development</a></li>
+                            <li><a href="#">/design</a></li>
+                            <li><a href="#">/ai-agents</a></li>
+                        </ul>
+                    </section>
+
+                    <section class="sidebar-section">
+                        <h3 class="section-title">LATEST SCANS</h3>
+                        <div id="latest-list" class="latest-scans">
+                            <!-- Populated by JS -->
+                        </div>
+                    </section>
+
+                    <section class="sidebar-section system-status">
+                        <h3 class="section-title">SYSTEM STATUS</h3>
+                        <p>NETWORK: OK</p>
+                        <p>UPTIME: 99.9%</p>
+                        <p>LOCATION: SECTOR-7</p>
+                    </section>
+                </aside>
+            </div>
+        </div>
+
+        <footer class="main-footer">
+            <div class="container footer-inner">
+                <p>&copy; 2026 HUMANITY LAST // SECURE CONNECTION ESTABLISHED</p>
+                <div class="footer-links">
+                    <a href="#">RSS</a>
+                    <a href="#">SOURCE</a>
+                    <a href="#">LEGAL</a>
+                </div>
+            </div>
         </footer>
     </div>
 
+    <!-- MODAL -->
+    <div id="post-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">ESC_TO_CLOSE</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
     <script>
+        let allPosts = [];
+
         async function fetchPosts() {
             try {
                 const response = await fetch('api.php');
                 if (!response.ok) throw new Error('Network response was not ok');
-                const posts = await response.json();
-                renderPosts(posts);
+                allPosts = await response.json();
+                renderPosts(allPosts);
+                renderLatest(allPosts);
+                renderCategories(allPosts);
             } catch (error) {
                 console.error('Error fetching posts:', error);
-                document.getElementById('app').innerHTML = `
-                    <div class="post-card">
-                        <h2 class="post-title">STATUS: ERROR 404</h2>
-                        <p>FAILED TO CONNECT TO API. CHECK LOGS.</p>
-                    </div>
-                `;
+                document.getElementById('app').innerHTML = `<div class="post-item">System Error: Fail during database read.</div>`;
             }
         }
 
         function renderPosts(posts) {
             const app = document.getElementById('app');
-            if (posts.length === 0) {
-                app.innerHTML = '<div class="post-card"><p>SYSTEM STATUS: NO POSTS FOUND IN /content/posts/</p></div>';
-                return;
-            }
-
             app.innerHTML = posts.map(post => `
-                <article class="post-card" id="${post.id}">
-                    <span class="post-date">[ ${post.date} ]</span>
-                    <h2 class="post-title">${post.title}</h2>
-                    <div class="post-content">
-                        ${parseMarkdown(post.rawMarkdown)}
-                    </div>
-                    <div class="tags">
-                        ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
-                    </div>
+                <article class="post-item">
+                    <header class="item-header">
+                        <span class="post-date">${post.date}</span>
+                        <span class="post-tag">/${post.tags[0] || 'void'}</span>
+                    </header>
+                    <h2 class="post-title"><a href="#" onclick="openPost('${post.id}')">${post.title}</a></h2>
+                    <p class="post-excerpt">${post.rawMarkdown.substring(0, 180)}...</p>
+                    <footer class="item-footer">
+                        <a href="#" class="read-more" onclick="openPost('${post.id}')">READ_LOG ></a>
+                    </footer>
                 </article>
             `).join('');
         }
 
-        function parseMarkdown(md) {
-            // Using marked.js for core parsing
-            let html = marked.parse(md);
-
-            // 5.4 Step 4 — Frontend Markdown Image Handler (as specified in docx)
-            // Converts: ![alt](./assets/filename.png)
-            // To:       <img src='/content/assets/filename.png' alt='alt' ... />
-            html = html.replace(
-                /src="\.\/assets\/([^"]+)"/g,
-                'src="/content/assets/$1"'
-            );
-
-            return html;
+        function renderLatest(posts) {
+            const list = document.getElementById('latest-list');
+            list.innerHTML = posts.slice(0, 3).map(post => `
+                <div class="scan-item" onclick="openPost('${post.id}')">
+                    <span class="scan-date">${post.date}</span>
+                    <h4>${post.title}</h4>
+                </div>
+            `).join('');
         }
 
-        // Initialize
+        function renderCategories(posts) {
+            const list = document.getElementById('category-list');
+            const cats = [...new Set(posts.flatMap(p => p.tags))];
+            if (cats.length > 0) {
+                list.innerHTML = cats.map(c => `<li><a href="#">/${c.toLowerCase()}</a></li>`).join('');
+            }
+        }
+
+        function openPost(id) {
+            const post = allPosts.find(p => p.id === id);
+            if (!post) return;
+            const modal = document.getElementById('post-modal');
+            const body = document.getElementById('modal-body');
+            body.innerHTML = `
+                <header class="modal-post-header">
+                    <span class="date">${post.date} // ID:${post.id.substring(0,8)}</span>
+                    <h1>${post.title}</h1>
+                </header>
+                <div class="modal-article-content">
+                    ${marked.parse(post.rawMarkdown.replace(/src="\.\/assets\/([^"]+)"/g, 'src="/content/assets/$1"'))}
+                </div>
+            `;
+            modal.style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+
+        document.querySelector('.close-modal').onclick = () => {
+             document.getElementById('post-modal').style.display = "none";
+             document.body.style.overflow = "auto";
+        };
+
+        window.onclick = (e) => {
+            if (e.target == document.getElementById('post-modal')) {
+                document.getElementById('post-modal').style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        };
+
+        document.addEventListener('keydown', (e) => { if (e.key === "Escape") document.querySelector('.close-modal').onclick(); });
+
         document.addEventListener('DOMContentLoaded', fetchPosts);
     </script>
 </body>
