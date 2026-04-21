@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /content/
+Disallow: /webhook.php
+Disallow: /README.md
+Disallow: /run.sh
+Disallow: /webhook-pull.log
+Disallow: /LICENSE-CODE
+Disallow: /LICENSE-CONTENT
+Disallow: /RULES.md
+Disallow: /webhook-cms-spec.docx
+Disallow: /.env
+Disallow: /.git/

@@ -11,10 +11,20 @@ server {
     # This protects .env, .git, .htaccess, etc.
     location ~ /\.(?!well-known) {
         deny all;
-        return 404;
+        access_log off;
+        log_not_found off;
     }
 
-    # RULE 2: Disable PHP execution in the content/ directory
+    # RULE 2: Block sensitive system and metadata files
+    # Protects README, LICENSE, internal scripts, and spec documents
+    location ~* \.(md|sh|log|docx|example|LICENSE.*)$ {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+
+    # RULE 3: Disable PHP execution in the content/ directory
     # Prevents a compromised or malicious commit from executing PHP
     location ^~ /content/ {
         location ~ \.(php|phtml|php8\.3)$ {
@@ -23,7 +33,7 @@ server {
         try_files $uri $uri/ =404;
     }
 
-    # RULE 3: Rate limit webhook endpoint
+    # RULE 4: Rate limit webhook endpoint
     location = /webhook.php {
         # Note: You must define the 'webhook' zone in the http block
         limit_req zone=webhook burst=5 nodelay;
@@ -32,7 +42,7 @@ server {
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     }
 
-    # RULE 4: Standard PHP-FPM processing for other .php files
+    # RULE 5: Standard PHP-FPM processing for other .php files
     location ~ \.php$ {
         include /etc/nginx/fastcgi_params;
         fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
