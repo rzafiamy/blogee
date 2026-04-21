@@ -19,13 +19,22 @@ cd /var/www/blogee
 ```
 
 ### 3. Initialize Content
+#### Option A: If you have Git (Recommended)
 Clone your *Content Repo* into the `content` subdirectory:
 ```bash
 git clone https://github.com/rzafiamy/your-content-repo.git content
 sudo chown -R www-data:www-data content
 ```
-> [!IMPORTANT]
-> If you don't have a content repo yet, you must at least create the directory structure: `mkdir -p content/posts content/assets` and ensure the web server has write permissions.
+
+#### Option B: If you DON'T have Git (Archive Sync)
+If your server lacks `git`, you can use the **Archive Sync** method:
+1. Create the content directory: `mkdir content`
+2. Ensure permissions: `sudo chown -R www-data:www-data content`
+3. Configure your `.env` (see Step 4) to use `SYNC_METHOD=archive`.
+> [!NOTE]
+> Archive Sync requires `curl` and `tar` to be available on your server shell.
+
+---
 
 ### 4. Configure Security & Secrets
 1. Create a `.env` file (copied from `.env.example`):
@@ -33,9 +42,13 @@ sudo chown -R www-data:www-data content
    cp .env.example .env
    ```
 2. Generate a secure secret: `openssl rand -hex 32`
-3. Add the secret to your `.env` file:
+3. Edit `.env` to include your settings:
    ```env
    GITHUB_WEBHOOK_SECRET=your_generated_secret
+   
+   # For No-Git Servers:
+   SYNC_METHOD=archive
+   REPO_ARCHIVE_URL=https://github.com/your-username/your-content-repo/tarball/main
    ```
 4. **Permissions**: `chmod 600 .env`
 
@@ -58,7 +71,8 @@ Apply the configuration from `nginx.conf.example` to your server block to protec
 If you see a "NO ACCESS LOGS FOUND" message or encounter PHP errors in your logs:
 1. **Check Directory Existence**: Verify that `content/posts` exists and contains at least one `.md` file.
 2. **Permissions**: Ensure Nginx/PHP-FPM (`www-data`) has read/write access to the `content` folder.
-3. **Webhook Logs**: Check `webhook-pull.log` in the root directory for any `git pull` or permission errors.
+3. **Webhook Logs**: Check `webhook-pull.log` in the root directory for any `git pull` or `tar/curl` errors.
+4. **Archive Sync Errors**: Ensure `REPO_ARCHIVE_URL` is a direct link to a `.tar.gz` archive (e.g., GitHub's `/tarball/main`).
 
 ---
 

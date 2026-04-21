@@ -24,30 +24,45 @@ if (!hash_equals($expected_signature, $signature)) {
     die('Unauthorized API Request.');
 }
 
-// 3. Execute HTTPS Git Pull (no credentials needed for public repo)
-$safe_dir = escapeshellarg($repo_dir);
+// 3. Execute Sync (Git Pull or Archive Download)
+$sync_method = getenv('SYNC_METHOD') ?: 'git';
+$safe_dir    = escapeshellarg($repo_dir);
 
 if (!is_dir($repo_dir)) {
-    $error_msg = "Error: Content directory not found at {$repo_dir}. Please clone your content repo first.";
-    $log_file = __DIR__ . '/webhook-pull.log';
-    if (is_writable(__DIR__) || (file_exists($log_file) && is_writable($log_file))) {
-        file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+    // Attempt to create the directory if it doesn't exist
+    if (!mkdir($repo_dir, 0755, true)) {
+        $error_msg = "Error: Content directory not found and could not be created at {$repo_dir}.";
+        log_webhook($error_msg);
+        http_response_code(500);
+        die($error_msg);
     }
-    http_response_code(500);
-    die($error_msg);
 }
 
-// Ensure we are on the main branch and pull latest
-$output   = shell_exec("cd {$safe_dir} && git checkout main && git pull origin main 2>&1");
-
-
-// 4. Append result to log file (if writable)
-$log_file = __DIR__ . '/webhook-pull.log';
-$log_entry = date('Y-m-d H:i:s') . ' - ' . ($output ?: 'No output from git command') . PHP_EOL;
-
-if (is_writable(__DIR__) || (file_exists($log_file) && is_writable($log_file))) {
-    file_put_contents($log_file, $log_entry, FILE_APPEND);
+if ($sync_method === 'archive') {
+    $repo_url = getenv('REPO_ARCHIVE_URL');
+    if (!$repo_url) {
+        $error_msg = "Error: REPO_ARCHIVE_URL not set in .env";
+        log_webhook($error_msg);
+        http_response_code(500);
+        die($error_msg);
+    }
+    // Using curl + tar to download and extract, stripping the top-level folder GitHub/GitLab adds
+    $output = shell_exec("curl -sL " . escapeshellarg($repo_url) . " | tar -xz --strip-components=1 -C " . $safe_dir . " 2>&1");
+} else {
+    // Standard Git Pull
+    $output = shell_exec("cd {$safe_dir} && git checkout main && git pull origin main 2>&1");
 }
+
+function log_webhook($msg) {
+    $log_file = __DIR__ . '/webhook-pull.log';
+    $log_entry = date('Y-m-d H:i:s') . ' - ' . $msg . PHP_EOL;
+    if (is_writable(__DIR__) || (file_exists($log_file) && is_writable($log_file))) {
+        file_put_contents($log_file, $log_entry, FILE_APPEND);
+    }
+}
+
+// 4. Log the result
+log_webhook($output ?: 'No output from sync command');
 
 
 http_response_code(200);
