@@ -2,7 +2,14 @@
 // public_html/webhook.php
 // PHP 8.3 FPM optimized webhook receiver
 
-// 1. Configuration - In production, use environment variables!
+// 1. Configuration & .env Loader
+if (file_exists(__DIR__ . '/.env')) {
+    $env = parse_ini_file(__DIR__ . '/.env');
+    if (isset($env['GITHUB_WEBHOOK_SECRET'])) {
+        putenv("GITHUB_WEBHOOK_SECRET={$env['GITHUB_WEBHOOK_SECRET']}");
+    }
+}
+
 $secret_key = getenv('GITHUB_WEBHOOK_SECRET') ?: 'PLEASE_CHANGE_ME_TO_A_SECURE_TOKEN';
 $repo_dir   = __DIR__ . '/content';    // Path to cloned repository
 
