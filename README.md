@@ -1,62 +1,97 @@
-# Webhook Blog // Modern Retro CMS
+# Webhook Blog // Modern Retro CMS 🕹️
 
-A high-performance, headless CMS blog powered by GitHub webhooks and PHP 8.3. This implementation follows the technical specification for a "Webhook-Triggered HTTPS Git Pull" architecture.
+![Modern Retro Blog UI Mockup](/home/cook/.gemini/antigravity/brain/2918e5f7-2ada-4ffd-bd63-18210dbd37a9/modern_retro_blog_ui_1776779979905.png)
 
-## Features
-- **Zero Database**: Content is stored as flat Markdown files in GitHub.
-- **Auto-Sync**: Production server automatically pulls changes on Every `git push`.
-- **Modern Retro Theme**: 8-bit aesthetic with glassmorphism, CRT effects, and premium animations.
-- **Secure**: HMAC-SHA256 signature validation for all webhook requests.
-- **Fast**: PHP 8.3 optimized and Nginx-ready.
+A high-performance, headless CMS blog powered by GitHub webhooks and PHP 8.3. This project implements a "Webhook-Triggered HTTPS Git Pull" architecture, allowing for a zero-database, ultra-secure, and automated publishing workflow.
 
-## Project Structure
-- `index.html`: The frontend portal.
-- `index.css`: Modern Retro 8-bit styles.
-- `api.php`: Serves content as JSON.
-- `webhook.php`: Handles GitHub sync triggers.
-- `content/`: Cloned repository folder (git ignored in development).
-    - `posts/`: Your .md blog posts.
-    - `assets/`: Images and other media.
+## 🚀 Quick Start (How-To)
 
-## Setup Instructions
+### 1. Create the Repositories
+You need two repositories on GitHub:
+- **Engine Repo** (this one): `https://github.com/rzafiamy/blogee.git`
+- **Content Repo**: A separate repo (e.g., `blogee-content`) to store your `.md` posts and assets.
 
-### 1. Server Deployment
-Clone this project to your Nginx web root.
-
-### 2. Initial Content Setup
-On your server, clone your content repository:
+### 2. Server Installation
+Clone the engine to your Nginx web root:
 ```bash
-git clone https://github.com/your-username/your-blog-content.git content
-chown -R www-data:www-data content
+git clone https://github.com/rzafiamy/blogee.git /var/www/blogee
+cd /var/www/blogee
 ```
 
-### 3. Webhook Configuration
-1. Go to your GitHub Repository > Settings > Webhooks.
-2. Add a new webhook:
-   - **Payload URL**: `https://yourdomain.com/webhook.php`
-   - **Content type**: `application/json`
-   - **Secret**: Generate a secure token (e.g., `openssl rand -hex 32`)
-3. Set the secret in your server environment:
+### 3. Initialize Content
+Clone your *Content Repo* into the `content` subdirectory:
+```bash
+git clone https://github.com/rzafiamy/your-content-repo.git content
+sudo chown -R www-data:www-data content
+```
+
+### 4. Configure Security & Secrets
+1. Create a `.env` file (copied from `.env.example`):
    ```bash
-   export GITHUB_WEBHOOK_SECRET='your_secret_token'
+   cp .env.example .env
    ```
-   (Or add it to your PHP-FPM pool config).
+2. Generate a secure secret: `openssl rand -hex 32`
+3. Add the secret to your `.env` file:
+   ```env
+   GITHUB_WEBHOOK_SECRET=your_generated_secret
+   ```
+4. **Permissions**: `chmod 600 .env`
 
-### 4. Nginx Configuration
-Use the provided `nginx.conf.example` to secure your installation.
+### 5. Setup GitHub Webhook
+1. Go to your **Content Repo** (not the engine repo) on GitHub.
+2. **Settings > Webhooks > Add webhook**.
+3. **Payload URL**: `https://yourdomain.com/webhook.php`
+4. **Content type**: `application/json`
+5. **Secret**: The same secret from your `.env` file.
+6. **Events**: "Just the push event".
 
-## Authoring Posts
-Create Markdown files in `posts/` with the following frontmatter:
+### 6. Nginx Hardening
+Apply the configuration from `nginx.conf.example` to your server block to protect your `.env` and `.git` files.
+
+---
+
+## 🛡️ Security Architecture
+
+- **Hidden File Protection**: Nginx is configured to block access to all dotfiles (like `.env` and `.git`).
+- **HMAC-SHA256 Validation**: Every webhook request is cryptographically signed by GitHub and verified by `webhook.php`.
+- **Timing Attack Prevention**: Uses `hash_equals()` for constant-time signature comparison.
+- **PHP Lockdown**: PHP execution is disabled inside the `/content` directory to prevent malicious uploads from running code.
+
+## ✍️ Content Specification
+
+Your blog posts must be in the `posts/` folder of your content repo with YAML frontmatter:
+
 ```markdown
 ---
-title: "My Awesome Post"
+title: "The Future of 8-Bit Design"
 date: "2026-04-21"
-tags: ["tech", "retro"]
+tags: ["design", "retro", "2026"]
 ---
-Your content here...
+Your markdown content here...
+
+![Sample Image](./assets/image.png)
 ```
 
-## Security Analysis
-- **Webhook validation**: Uses constant-time comparison to prevent timing attacks.
-- **PHP Lockdown**: Nginx rules prevent PHP execution inside the `/content` directory.
-- **Git protection**: Public access to `.git` is blocked.
+## 🛠️ Technology Stack
+- **Backend**: PHP 8.3 (Headless API + Webhook Engine)
+- **Frontend**: Vanilla HTML/JS with **Marked.js** for client-side rendering.
+- **Theme**: custom CSS "Modern Retro" with glassmorphism and CRT effects.
+- **Deployment**: Automated via GitHub Webhooks.
+
+---
+
+## 🏗️ Deployment Checklist
+- [ ] Create `blogee` repository on GitHub.
+- [ ] Push engine code: `git push -u origin main`.
+- [ ] Create Content repository.
+- [ ] Setup Nginx with `nginx.conf.example`.
+- [ ] Verify `webhook-pull.log` for successful syncs.
+
+---
+
+## ⚖️ Licensing
+
+This project uses a dual-licensing model to protect both the software and the creative content:
+
+- **Source Code**: Licensed under the [Apache License 2.0](LICENSE-CODE). This applies to all PHP, HTML, CSS, and JS files in the engine.
+- **Blog Content**: Licensed under the [GNU General Public License v3.0](LICENSE-CONTENT). This applies to all Markdown files and assets within the `content/` directory.
