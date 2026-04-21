@@ -29,7 +29,10 @@ $safe_dir = escapeshellarg($repo_dir);
 
 if (!is_dir($repo_dir)) {
     $error_msg = "Error: Content directory not found at {$repo_dir}. Please clone your content repo first.";
-    file_put_contents(__DIR__ . '/webhook-pull.log', date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+    $log_file = __DIR__ . '/webhook-pull.log';
+    if (is_writable(__DIR__) || (file_exists($log_file) && is_writable($log_file))) {
+        file_put_contents($log_file, date('Y-m-d H:i:s') . ' - ' . $error_msg . PHP_EOL, FILE_APPEND);
+    }
     http_response_code(500);
     die($error_msg);
 }
@@ -38,12 +41,14 @@ if (!is_dir($repo_dir)) {
 $output   = shell_exec("cd {$safe_dir} && git checkout main && git pull origin main 2>&1");
 
 
-// 4. Append result to log file
-file_put_contents(
-    __DIR__ . '/webhook-pull.log',
-    date('Y-m-d H:i:s') . ' - ' . $output . PHP_EOL,
-    FILE_APPEND
-);
+// 4. Append result to log file (if writable)
+$log_file = __DIR__ . '/webhook-pull.log';
+$log_entry = date('Y-m-d H:i:s') . ' - ' . ($output ?: 'No output from git command') . PHP_EOL;
+
+if (is_writable(__DIR__) || (file_exists($log_file) && is_writable($log_file))) {
+    file_put_contents($log_file, $log_entry, FILE_APPEND);
+}
+
 
 http_response_code(200);
 echo 'Pull executed successfully.';
