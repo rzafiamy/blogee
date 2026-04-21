@@ -28,7 +28,27 @@ sudo chown -R www-data:www-data content
 > If you don't have a content repo yet, you must at least create the directory structure: `mkdir -p content/posts content/assets` and ensure the web server has write permissions.
 
 ### 4. Configure Security & Secrets
-... [existing content] ...
+1. Create a `.env` file (copied from `.env.example`):
+   ```bash
+   cp .env.example .env
+   ```
+2. Generate a secure secret: `openssl rand -hex 32`
+3. Add the secret to your `.env` file:
+   ```env
+   GITHUB_WEBHOOK_SECRET=your_generated_secret
+   ```
+4. **Permissions**: `chmod 600 .env`
+
+### 5. Setup GitHub Webhook
+1. Go to your **Content Repo** (not the engine repo) on GitHub.
+2. **Settings > Webhooks > Add webhook**.
+3. **Payload URL**: `https://yourdomain.com/webhook.php`
+4. **Content type**: `application/json`
+5. **Secret**: The same secret from your `.env` file.
+6. **Events**: "Just the push event".
+
+### 6. Nginx Hardening
+Apply the configuration from `nginx.conf.example` to your server block to protect your `.env` and `.git` files.
 
 ---
 
@@ -43,8 +63,6 @@ If you see a "NO ACCESS LOGS FOUND" message or encounter PHP errors in your logs
 ---
 
 ## 🛡️ Security Architecture
-... [existing content] ...
-
 
 - **Hidden File Protection**: Nginx is configured to block access to all dotfiles (like `.env` and `.git`).
 - **HMAC-SHA256 Validation**: Every webhook request is cryptographically signed by GitHub and verified by `webhook.php`.
