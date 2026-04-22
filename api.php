@@ -53,9 +53,18 @@ if (is_dir($content_dir)) {
             }
         }
 
+        // Helper to get hierarchical path
+        $dateParts = explode('-', $date);
+        $year  = $dateParts[0] ?? '0000';
+        $month = $dateParts[1] ?? '00';
+        $day   = $dateParts[2] ?? '00';
+        $cleanCategory = strtolower(str_replace(' / ', '/', $category));
+        $fullPath = "{$cleanCategory}/{$year}/{$month}/{$day}/{$slug}";
+
         $posts[] = [
             'id'          => md5(basename($filePath)),
             'slug'        => $slug,
+            'path'        => $fullPath,
             'title'       => $title,
             'date'        => $date,
             'category'    => $category,

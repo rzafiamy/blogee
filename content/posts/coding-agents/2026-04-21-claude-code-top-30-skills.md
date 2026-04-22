@@ -1,7 +1,8 @@
 ---
-title: "Claude Code in 2026: The 30 Skills, Commands, and MCPs That Actually Matter"
+title: "Claude Code 2026: The Top 30 Skills & Commands"
 date: "2026-04-21"
-tags: ["claude-code", "productivity", "dev-tools", "mcp", "ai-agents"]
+slug: "claude-code-top-30-skills"
+tags: ["claude", "coding-agents", "mcp"]
 ---
 
 ![Claude Code 2026](./assets/claude-code-2026.png)

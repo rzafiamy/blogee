@@ -93,7 +93,12 @@
                 const response = await fetch('api.php');
                 if (!response.ok) throw new Error('Network response was not ok');
                 allPosts = await response.json();
-                renderPosts(allPosts);
+                const activeQuery = document.getElementById('search-input').value;
+                if (!activeQuery) {
+                    renderPosts(allPosts);
+                } else {
+                    handleSearch();
+                }
                 renderLatest(allPosts);
                 renderCategories(allPosts);
             } catch (error) {
@@ -102,10 +107,15 @@
             }
         }
 
-        function renderPosts(posts) {
+        function renderPosts(posts, isSearchResult = false) {
             const app = document.getElementById('app');
             if (posts.length === 0) {
-                app.innerHTML = `
+                app.innerHTML = isSearchResult ? `
+                    <article class="post-item">
+                        <h2 class="post-title">NO RESULTS FOUND</h2>
+                        <p class="post-excerpt">Your search query did not match any stored records in the database. Scan failed.</p>
+                    </article>
+                ` : `
                     <article class="post-item">
                         <header class="item-header">
                             <span class="post-date">ERR_NO_DATA</span>
@@ -123,10 +133,10 @@
                         <span class="post-date">${post.date}</span>
                         <span class="post-tag">▣ ${post.category}</span>
                     </header>
-                    <h2 class="post-title"><a href="#/${post.slug}" onclick="openPostBySlug('${post.slug}'); return false;">${post.title}</a></h2>
+                    <h2 class="post-title"><a href="#/${post.path}" onclick="openPostByPath('${post.path}'); return false;">${post.title}</a></h2>
                     <p class="post-excerpt">${post.rawMarkdown.substring(0, 180)}...</p>
                     <footer class="item-footer">
-                        <a href="#/${post.slug}" class="read-more" onclick="openPostBySlug('${post.slug}'); return false;">▶ ACCESS_LOG</a>
+                        <a href="#/${post.path}" class="read-more" onclick="openPostByPath('${post.path}'); return false;">▶ ACCESS_LOG</a>
                     </footer>
                 </article>
             `).join('');
@@ -136,7 +146,7 @@
         function renderLatest(posts) {
             const list = document.getElementById('latest-list');
             list.innerHTML = posts.slice(0, 3).map(post => `
-                <div class="scan-item" onclick="openPostBySlug('${post.slug}')">
+                <div class="scan-item" onclick="openPostByPath('${post.path}')">
                     <span class="scan-date">${post.date}</span>
                     <h4>${post.title}</h4>
                 </div>
@@ -153,26 +163,32 @@
         }
 
         function filterByCategory(cat) {
-            const filtered = allPosts.filter(p => p.category === cat);
-            renderPosts(filtered);
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = allPosts.filter(p => p.category === cat && (
+                p.title.toLowerCase().includes(query) || 
+                p.rawMarkdown.toLowerCase().includes(query)
+            ));
+            renderPosts(filtered, query.length > 0);
         }
 
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase();
             const filtered = allPosts.filter(p => 
                 p.title.toLowerCase().includes(query) || 
                 p.rawMarkdown.toLowerCase().includes(query) ||
+                p.category.toLowerCase().includes(query) ||
+                p.slug.toLowerCase().includes(query) ||
                 p.tags.some(t => t.toLowerCase().includes(query))
             );
-            renderPosts(filtered);
-        });
+            renderPosts(filtered, true);
+        }
 
-        function openPostBySlug(slug) {
-            const post = allPosts.find(p => p.slug === slug);
+        function openPostByPath(path) {
+            const post = allPosts.find(p => p.path === path);
             if (!post) return;
             
             // Update URL hash
-            window.location.hash = `/${slug}`;
+            window.location.hash = `/${path}`;
             
             const modal = document.getElementById('post-modal');
             const body = document.getElementById('modal-body');
@@ -192,10 +208,10 @@
         function checkHash() {
             const hash = window.location.hash;
             if (hash.startsWith('#/')) {
-                const slug = hash.substring(2);
+                const path = hash.substring(2);
                 // Wait for posts to be loaded
                 if (allPosts.length > 0) {
-                    openPostBySlug(slug);
+                    openPostByPath(path);
                 } else {
                     // Try again in 100ms
                     setTimeout(checkHash, 100);
@@ -218,6 +234,7 @@
         document.querySelector('.close-modal').onclick = closeModal;
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('search-input').addEventListener('input', handleSearch);
             fetchPosts().then(checkHash);
         });
     </script>

@@ -1,7 +1,8 @@
 ---
-title: "Understanding AI Benchmarks: What the Numbers Actually Mean"
+title: "Understanding AI Benchmarks: More than Just Numbers"
 date: "2026-04-21"
-tags: ["benchmarks", "llm", "analysis"]
+slug: "ai-benchmarks-explained"
+tags: ["ai-research", "benchmarking", "mmu"]
 ---
 
 Every new LLM release comes with a scorecard: *MMLU 91.2, HumanEval 94.0, GSM8K 97.3.* These numbers dominate the press releases — but what do they actually tell you? And more importantly, which ones should you care about when choosing a model for your project?

@@ -1,7 +1,8 @@
 ---
-title: "The AI Odyssey: 4 Years of Lessons in Generative AI"
+title: "The AI Odyssey: Documenting the Generative Era"
 date: "2026-04-21"
-tags: ["generative-ai", "chatgpt", "journey"]
+slug: "ai-odyssey-intro"
+tags: ["ai", "intro", "2026"]
 ---
 
 Late 2022 changed everything. When ChatGPT launched, it wasn't just a new product — it was the moment the general public got a clear, tangible sense of what AI could do. Suddenly, everyone was a prompt engineer.

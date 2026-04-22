@@ -1,7 +1,8 @@
 ---
-title: "Llama.cpp: The Quiet Motor Powering the Local AI Revolution"
+title: "Self-Hosting AI: Why llama.cpp is the Foundation"
 date: "2026-04-22"
-tags: ["llama.cpp", "local-ai", "gguf", "qwen", "self-hosting"]
+slug: "llama-cpp-setup-guide"
+tags: ["llama-cpp", "self-hosting", "qwen"]
 ---
 
 If you’ve ever used **Ollama**, **LM Studio**, or any app that lets you chat with an AI model on your own computer, you’ve likely used `llama.cpp` without even knowing it.
