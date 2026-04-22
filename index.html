@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUMANITY LAST BLOG BLOG // 2026</title>
+    <title>HUMANITY LAST BLOG // 2026</title>
+    <link rel="alternate" type="application/rss+xml" title="Humanity Last Blog RSS Feed" href="/rss.php">
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -15,7 +16,15 @@
             <div class="header-inner container">
                 <div class="brand">
                     <div class="brand-box"></div>
-                    <h1>HUMANITY LAST BLOG</h1>
+                    <div class="brand-text">
+                        <a href="#" class="brand-link" onclick="window.location.hash=''; return false;">
+                            <h1>HUMANITY LAST BLOG</h1>
+                        </a>
+                        <p class="brand-slogan">Share past experience of Rija on AI</p>
+                    </div>
+                </div>
+                <div id="reading-time-badge" class="reading-time-badge" style="display:none;">
+                    <span id="reading-time-text"></span>
                 </div>
             </div>
         </header>
@@ -29,8 +38,8 @@
                     </div>
                 </main>
 
-                <!-- MINIMALIST SIDEBAR -->
-                <aside class="sidebar">
+                <!-- SIDEBAR -->
+                <aside class="sidebar" id="sidebar">
                     <section class="sidebar-section">
                         <h3 class="section-title">SEARCH DATABASE</h3>
                         <div class="search-wrap">
@@ -69,37 +78,57 @@
             <div class="container footer-inner">
                 <p>&copy; 2026 HUMANITY LAST BLOG // SECURE CONNECTION ESTABLISHED</p>
                 <div class="footer-links">
-                    <a href="#">RSS</a>
-                    <a href="#">SOURCE</a>
-                    <a href="#">LEGAL</a>
+                    <a href="rss.php">RSS</a>
+                    <a href="https://github.com/rzafiamy" target="_blank" rel="noopener">SOURCE</a>
+                    <a href="#/legal" onclick="renderLegal(); return false;">LEGAL</a>
                 </div>
             </div>
         </footer>
     </div>
 
-    <!-- REMOVED MODAL HTML -->
-
     <script>
         let allPosts = [];
 
-        async function fetchPosts() {
-            try {
-                const response = await fetch('api.php');
-                if (!response.ok) throw new Error('Network response was not ok');
-                allPosts = await response.json();
-                
-                // Initial routing
-                checkHash();
-                
-                renderLatest(allPosts);
-                renderCategories(allPosts);
-            } catch (error) {
-                console.error('Error fetching posts:', error);
-                document.getElementById('app').innerHTML = `<div class="post-item">System Error: Fail during database read.</div>`;
-            }
+        function calcReadingTime(markdown) {
+            const words = markdown.trim().split(/\s+/).length;
+            const minutes = Math.max(1, Math.round(words / 200));
+            return minutes;
+        }
+
+        function humanDate(dateStr) {
+            const now = new Date();
+            const d = new Date(dateStr + 'T00:00:00');
+            const diffMs = now - d;
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays <= 6) return `${diffDays} days ago`;
+            if (diffDays <= 13) return 'Last week';
+            if (diffDays <= 20) return '2 weeks ago';
+            if (diffDays <= 27) return '3 weeks ago';
+            if (diffDays <= 45) return 'This month';
+            if (diffDays <= 75) return 'Last month';
+
+            const months = Math.round(diffDays / 30);
+            if (months < 12) return `${months} months ago`;
+            const years = Math.round(diffDays / 365);
+            return years === 1 ? 'A year ago' : `${years} years ago`;
+        }
+
+        function showReadingTime(minutes) {
+            const badge = document.getElementById('reading-time-badge');
+            const text = document.getElementById('reading-time-text');
+            text.textContent = `⏱ ${minutes} MIN READ`;
+            badge.style.display = 'block';
+        }
+
+        function hideReadingTime() {
+            document.getElementById('reading-time-badge').style.display = 'none';
         }
 
         function renderFeed(posts, isSearchResult = false) {
+            hideReadingTime();
             const app = document.getElementById('app');
             if (posts.length === 0) {
                 app.innerHTML = isSearchResult ? `
@@ -123,12 +152,14 @@
                 <article class="post-item">
                     <header class="item-header">
                         <span class="post-date">${post.date}</span>
+                        <span class="post-human-date">${humanDate(post.date)}</span>
                         <span class="post-tag">▣ ${post.category}</span>
                     </header>
                     <h2 class="post-title"><a href="#/${post.path}">${post.title}</a></h2>
                     <p class="post-excerpt">${post.rawMarkdown.substring(0, 180)}...</p>
                     <footer class="item-footer">
                         <a href="#/${post.path}" class="read-more">▶ ACCESS_LOG</a>
+                        <span class="feed-read-time">⏱ ${calcReadingTime(post.rawMarkdown)} min</span>
                     </footer>
                 </article>
             `).join('');
@@ -141,12 +172,15 @@
                 app.innerHTML = `<div class="post-item">Error: Post not found in database.</div>`;
                 return;
             }
-            
+
+            const minutes = calcReadingTime(post.rawMarkdown);
+            showReadingTime(minutes);
+
             app.innerHTML = `
                 <article class="post-detail">
                     <header class="detail-header">
-                        <a href="#" class="back-link">◀ BACK_TO_FEED</a>
-                        <span class="date">${post.date} | ▣ ${post.category}</span>
+                        <a href="#" class="back-link" onclick="window.location.hash=''; return false;">◀ BACK_TO_FEED</a>
+                        <span class="date">${post.date} <span class="human-date-inline">(${humanDate(post.date)})</span> | ▣ ${post.category}</span>
                         <h1>${post.title}</h1>
                     </header>
                     <div class="article-body">
@@ -160,11 +194,46 @@
             window.scrollTo(0, 0);
         }
 
+        function renderLegal() {
+            hideReadingTime();
+            window.location.hash = '#/legal';
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <article class="post-detail">
+                    <header class="detail-header">
+                        <a href="#" class="back-link" onclick="window.location.hash=''; return false;">◀ BACK_TO_FEED</a>
+                        <h1>LEGAL NOTICE</h1>
+                    </header>
+                    <div class="article-body legal-body">
+                        <h2>About This Website</h2>
+                        <p>This website is maintained and updated by <strong>rzafiamy</strong> from a public GitHub repository. It serves as a personal blog to share knowledge and experience on Artificial Intelligence, accumulated over several years of testing and development.</p>
+
+                        <h2>Hosting & Infrastructure</h2>
+                        <p>Hosted on <strong>infodev.ovh</strong> infrastructure. Domain name provided by <strong>OVH Cloud</strong>.</p>
+
+                        <h2>Source Code</h2>
+                        <p>The source code of this blog platform is open-source and available on GitHub under the Apache 2.0 license. Contributions and forks are welcome.</p>
+                        <p><a href="https://github.com/rzafiamy" target="_blank" rel="noopener">github.com/rzafiamy</a></p>
+
+                        <h2>Content License</h2>
+                        <p>All blog content (articles, posts) published on this site is licensed under <strong>GPL v3.0</strong>. You are free to share and adapt the content under the same terms.</p>
+
+                        <h2>Privacy</h2>
+                        <p>This site does not use cookies, does not track visitors, and does not collect any personal data. No analytics or third-party trackers are embedded.</p>
+
+                        <h2>Contact</h2>
+                        <p>For any inquiries, please reach out via the GitHub repository linked above.</p>
+                    </div>
+                </article>
+            `;
+            window.scrollTo(0, 0);
+        }
+
         function renderLatest(posts) {
             const list = document.getElementById('latest-list');
             list.innerHTML = posts.slice(0, 3).map(post => `
                 <div class="scan-item" onclick="window.location.hash = '#/${post.path}'">
-                    <span class="scan-date">${post.date}</span>
+                    <span class="scan-date">${post.date} · ${humanDate(post.date)}</span>
                     <h4>${post.title}</h4>
                 </div>
             `).join('');
@@ -174,26 +243,26 @@
             const list = document.getElementById('category-list');
             const cats = [...new Set(posts.map(p => p.category))];
             if (cats.length > 0) {
-                list.innerHTML = cats.map(c => `<li><a href="#" onclick="filterByCategory('${c}'); return false;">/ ${c.toLowerCase()}</a></li>`).join('') + 
+                list.innerHTML = cats.map(c => `<li><a href="#" onclick="filterByCategory('${c}'); return false;">/ ${c.toLowerCase()}</a></li>`).join('') +
                                 `<li><a href="#" onclick="window.location.hash = ''; return false;">/ all_posts</a></li>`;
             }
         }
 
         function filterByCategory(cat) {
-            window.location.hash = ''; 
+            window.location.hash = '';
             const filtered = allPosts.filter(p => p.category === cat);
             renderFeed(filtered);
         }
 
         function handleSearch() {
-            window.location.hash = ''; 
+            window.location.hash = '';
             const query = document.getElementById('search-input').value.toLowerCase();
             if (!query) {
                 renderFeed(allPosts);
                 return;
             }
-            const filtered = allPosts.filter(p => 
-                p.title.toLowerCase().includes(query) || 
+            const filtered = allPosts.filter(p =>
+                p.title.toLowerCase().includes(query) ||
                 p.rawMarkdown.toLowerCase().includes(query) ||
                 p.category.toLowerCase().includes(query) ||
                 p.slug.toLowerCase().includes(query) ||
@@ -204,7 +273,9 @@
 
         function checkHash() {
             const hash = window.location.hash;
-            if (hash.startsWith('#/')) {
+            if (hash === '#/legal') {
+                renderLegal();
+            } else if (hash.startsWith('#/')) {
                 const path = hash.substring(2);
                 if (allPosts.length > 0) {
                     renderPostDetail(path);
@@ -212,7 +283,23 @@
                     setTimeout(checkHash, 100);
                 }
             } else {
+                hideReadingTime();
                 if (allPosts.length > 0) renderFeed(allPosts);
+            }
+        }
+
+        async function fetchPosts() {
+            try {
+                const response = await fetch('api.php');
+                if (!response.ok) throw new Error('Network response was not ok');
+                allPosts = await response.json();
+
+                checkHash();
+                renderLatest(allPosts);
+                renderCategories(allPosts);
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+                document.getElementById('app').innerHTML = `<div class="post-item">System Error: Fail during database read.</div>`;
             }
         }
 
