@@ -31,8 +31,8 @@ If your server lacks `git`, you can use the **Archive Sync** method:
 1. Create the content directory: `mkdir content`
 2. Ensure permissions: `sudo chown -R www-data:www-data content`
 3. Configure your `.env` (see Step 4) to use `SYNC_METHOD=archive`.
-> [!NOTE]
-> Archive Sync requires `curl` and `tar` to be available on your server shell.
+> [!TIP]
+> Archive Sync now uses pure PHP (`ZipArchive`). No `curl`, `tar`, or `shell_exec` required! Use the GitHub `/zipball/main` URL for best compatibility.
 
 ---
 
