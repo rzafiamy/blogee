@@ -135,6 +135,11 @@ h1 {
     grid-template-columns: 1fr 300px;
     gap: 60px;
     align-items: start;
+    min-width: 0;
+}
+
+.content-grid > *:first-child {
+    min-width: 0;
 }
 
 /* ARTICLE FEED */
@@ -471,6 +476,8 @@ h1 {
     padding: 1.5rem;
     margin: 2rem 0;
     overflow-x: auto;
+    min-width: 0;
+    max-width: 100%;
     border: 2px solid var(--primary-color);
     box-shadow: 6px 6px 0 var(--secondary-color);
     border-radius: 4px;
