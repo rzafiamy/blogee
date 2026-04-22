@@ -108,6 +108,7 @@ Your blog posts must be in the `posts/` folder of your content repo with YAML fr
 ```markdown
 ---
 title: "The Future of 8-Bit Design"
+description: "Exploring how 8-bit aesthetics are making a comeback in modern UI/UX design and why it matters."
 date: "2026-04-21"
 tags: ["design", "retro", "2026"]
 ---

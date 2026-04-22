@@ -1,5 +1,6 @@
 ---
 title: "Understanding AI Benchmarks: More than Just Numbers"
+description: "Demystifying AI scorecards: how to navigate MMLU, HumanEval, and Chatbot Arena to choose the right model for your specific needs."
 date: "2026-04-21"
 slug: "ai-benchmarks-explained"
 tags: ["ai-research", "benchmarking", "mmu"]

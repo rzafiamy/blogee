@@ -13,6 +13,7 @@ if (is_dir($content_dir)) {
         $content = file_get_contents($filePath);
         $title = 'Untitled';
         $date = 'Unknown Date';
+        $description = '';
         $tags = [];
         $markdown_body = $content;
 
@@ -34,6 +35,9 @@ if (is_dir($content_dir)) {
             if (preg_match('/date:\s*"(.*?)"/', $frontmatter, $m)) $date = $m[1];
             elseif (preg_match('/date:\s*(.*)/', $frontmatter, $m)) $date = trim($m[1], " '\"");
 
+            if (preg_match('/description:\s*"(.*?)"/s', $frontmatter, $m)) $description = $m[1];
+            elseif (preg_match('/description:\s*(.*)/', $frontmatter, $m)) $description = trim($m[1], " '\"");
+
             if (preg_match('/tags:\s*\[(.*?)\]/', $frontmatter, $m)) {
                 $tags_string = str_replace(['"', "'"], '', $m[1]);
                 $tags = array_map('trim', explode(',', $tags_string));
@@ -48,13 +52,14 @@ if (is_dir($content_dir)) {
         $fullPath = "{$cleanCategory}/{$year}/{$month}/{$day}/{$slug}";
 
         $posts[] = [
-            'slug'     => $slug,
-            'path'     => $fullPath,
-            'title'    => $title,
-            'date'     => $date,
-            'category' => $category,
-            'tags'     => array_values(array_filter($tags)),
-            'excerpt'  => substr(strip_tags($markdown_body), 0, 300),
+            'slug'        => $slug,
+            'path'        => $fullPath,
+            'title'       => $title,
+            'date'        => $date,
+            'category'    => $category,
+            'tags'        => array_values(array_filter($tags)),
+            'description' => $description,
+            'excerpt'     => $description ?: substr(strip_tags($markdown_body), 0, 300),
         ];
     }
 }

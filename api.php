@@ -16,6 +16,7 @@ if (is_dir($content_dir)) {
         $title = 'Untitled'; 
         $date = 'Unknown Date'; 
         $tags = [];
+        $description = '';
         $markdown_body = $content;
 
         // Extract category from folder name (relative to content/posts)
@@ -47,6 +48,12 @@ if (is_dir($content_dir)) {
                 $date = trim($m[1], " '\"");
             }
 
+            if (preg_match('/description:\s*"(.*?)"/s', $frontmatter, $m)) {
+                $description = $m[1];
+            } elseif (preg_match('/description:\s*(.*)/', $frontmatter, $m)) {
+                $description = trim($m[1], " '\"");
+            }
+
             if (preg_match('/tags:\s*\[(.*?)\]/', $frontmatter, $m)) {
                 $tags_string = str_replace(['"', "'"], '', $m[1]);
                 $tags = array_map('trim', explode(',', $tags_string));
@@ -66,6 +73,7 @@ if (is_dir($content_dir)) {
             'slug'        => $slug,
             'path'        => $fullPath,
             'title'       => $title,
+            'description' => $description,
             'date'        => $date,
             'category'    => $category,
             'tags'        => array_values(array_filter($tags)),

@@ -24,6 +24,7 @@ Retrieve a complete list of all blog posts in JSON format.
     "slug": "post-slug",
     "path": "category/2026/04/22/post-slug",
     "title": "Post Title",
+    "description": "A compelling hook to attract readers...",
     "date": "2026-04-22",
     "category": "Category Name",
     "tags": ["tag1", "tag2"],
@@ -39,6 +40,7 @@ Retrieve a complete list of all blog posts in JSON format.
 | `slug` | String | URL-friendly identifier. |
 | `path` | String | Hierarchical path used for frontend routing. |
 | `title` | String | Title extracted from YAML frontmatter. |
+| `description` | String | A compelling short hook/accroche for the post. |
 | `date` | String | ISO date (YYYY-MM-DD). |
 | `category`| String | Directory name where the post is stored. |
 | `tags` | Array | List of tags from frontmatter. |

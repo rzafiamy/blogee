@@ -1,5 +1,6 @@
 ---
 title: "Self-Hosting AI: Why llama.cpp is the Foundation"
+description: "Exploring why llama.cpp is the 'quiet motor' of the local AI world, and how it enables high-performance models like Qwen 3.5 to run on your own hardware."
 date: "2026-04-22"
 slug: "llama-cpp-setup-guide"
 tags: ["llama-cpp", "self-hosting", "qwen"]

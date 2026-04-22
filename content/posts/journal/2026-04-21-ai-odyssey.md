@@ -1,5 +1,6 @@
 ---
 title: "The AI Odyssey: Documenting the Generative Era"
+description: "An introductory look at the Generative AI revolution since 2022 and what to expect from this blog: from LLM architecture to Agentic AI."
 date: "2026-04-21"
 slug: "ai-odyssey-intro"
 tags: ["ai", "intro", "2026"]

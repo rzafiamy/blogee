@@ -1,5 +1,6 @@
 ---
 title: "The AI Inference Stack: From Silicon to Intelligence"
+description: "A deep dive into the hardware and software layers that power AI inference, from NVIDIA's CUDA ecosystem to the physics of VRAM and quantization techniques."
 date: "2026-04-22"
 slug: "ai-inference-stack-deep-dive"
 tags: ["gpu", "cuda", "llm", "hardware"]

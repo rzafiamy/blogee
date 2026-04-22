@@ -15,6 +15,7 @@ description: Guidelines for creating, formatting, and organizing blog posts for 
   ```yaml
   ---
   title: "A Compelling Title"
+  description: "A short, engaging hook (accroche) to attract users to open this post."
   date: "YYYY-MM-DD"
   tags: ["tag1", "tag2"]
   ---

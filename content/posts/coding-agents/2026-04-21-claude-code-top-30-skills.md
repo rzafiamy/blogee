@@ -1,5 +1,6 @@
 ---
 title: "Claude Code 2026: The Top 30 Skills & Commands"
+description: "Master the sprawlings toolkit of Claude Code 2026: a curated list of the top 30 slash commands, specialized skills, and MCP servers to supercharge your agentic development."
 date: "2026-04-21"
 slug: "claude-code-top-30-skills"
 tags: ["claude", "coding-agents", "mcp"]

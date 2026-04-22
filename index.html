@@ -8,6 +8,15 @@
     <link rel="alternate" type="application/rss+xml" title="Humanity Last Blog RSS Feed" href="/rss.php">
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Code Highlight -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <!-- Math Formula (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 </head>
 
 <body>
@@ -84,6 +93,13 @@
                 </div>
             </div>
         </footer>
+
+        <!-- LIGHTBOX MODAL -->
+        <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
+            <span class="lightbox-close">&times;</span>
+            <img class="lightbox-content" id="lightbox-img">
+            <div id="lightbox-caption" class="lightbox-caption"></div>
+        </div>
     </div>
 
     <script>
@@ -156,7 +172,7 @@
                         <span class="post-tag">▣ ${post.category}</span>
                     </header>
                     <h2 class="post-title"><a href="#/${post.path}">${post.title}</a></h2>
-                    <p class="post-excerpt">${post.rawMarkdown.substring(0, 180)}...</p>
+                    <p class="post-excerpt">${post.description || post.rawMarkdown.substring(0, 180) + '...'}</p>
                     <footer class="item-footer">
                         <a href="#/${post.path}" class="read-more">▶ ACCESS_LOG</a>
                         <span class="feed-read-time">⏱ ${calcReadingTime(post.rawMarkdown)} min</span>
@@ -166,12 +182,21 @@
         }
 
         function renderPostDetail(path) {
-            const post = allPosts.find(p => p.path === path);
+            const index = allPosts.findIndex(p => p.path === path);
+            const post = allPosts[index];
             const app = document.getElementById('app');
             if (!post) {
                 app.innerHTML = `<div class="post-item">Error: Post not found in database.</div>`;
                 return;
             }
+
+            const prevPost = index < allPosts.length - 1 ? allPosts[index + 1] : null;
+            const nextPost = index > 0 ? allPosts[index - 1] : null;
+
+            const relatedPosts = allPosts
+                .filter(p => p.path !== path && (p.category === post.category || p.tags.some(t => post.tags.includes(t))))
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3);
 
             const minutes = calcReadingTime(post.rawMarkdown);
             showReadingTime(minutes);
@@ -186,11 +211,72 @@
                     <div class="article-body">
                         ${marked.parse(post.rawMarkdown).replace(/(src|href)="\.\/assets\/([^"]+)"/g, '$1="/content/assets/$2"')}
                     </div>
+                    
                     <footer class="detail-footer">
                         <div class="tags">TAGS: ${post.tags.map(t => `<span class="tag">#${t}</span>`).join(' ')}</div>
+                        
+                        <nav class="post-navigation">
+                            ${prevPost ? `
+                                <a href="#/${prevPost.path}" class="nav-prev">
+                                    <span class="nav-label">◀ PREVIOUS_LOG</span>
+                                    <span class="nav-title">${prevPost.title}</span>
+                                </a>
+                            ` : `<div class="nav-spacer"></div>`}
+                            ${nextPost ? `
+                                <a href="#/${nextPost.path}" class="nav-next">
+                                    <span class="nav-label">NEXT_LOG ▶</span>
+                                    <span class="nav-title">${nextPost.title}</span>
+                                </a>
+                            ` : `<div class="nav-spacer"></div>`}
+                        </nav>
+
+                        ${relatedPosts.length > 0 ? `
+                            <div class="related-posts">
+                                <h3 class="related-title">▣ RELATED_DATABASE_ENTRIES</h3>
+                                <div class="related-grid">
+                                    ${relatedPosts.map(p => `
+                                        <div class="related-card" onclick="window.location.hash='#/${p.path}'">
+                                            <span class="related-cat">/${p.category}</span>
+                                            <h4>${p.title}</h4>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
                     </footer>
                 </article>
             `;
+            
+            // Add click handlers for images (lightbox)
+            const images = app.querySelectorAll('.article-body img');
+            images.forEach(img => {
+                img.setAttribute('loading', 'lazy');
+                img.onclick = function() {
+                    const lightbox = document.getElementById('lightbox');
+                    const lightboxImg = document.getElementById('lightbox-img');
+                    const captionText = document.getElementById('lightbox-caption');
+                    lightbox.style.display = "flex";
+                    lightboxImg.src = this.src;
+                    captionText.innerHTML = this.alt;
+                }
+            });
+
+            // Initialize Syntax Highlighting
+            app.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            // Initialize Math Formulas
+            if (window.renderMathInElement) {
+                renderMathInElement(app, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+
             window.scrollTo(0, 0);
         }
 
