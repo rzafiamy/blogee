@@ -23,6 +23,7 @@ if (is_dir($content_dir)) {
         $rawCategory = trim($relativeDir, DIRECTORY_SEPARATOR);
         $category = $rawCategory ? str_replace(DIRECTORY_SEPARATOR, ' / ', $rawCategory) : 'Uncategorized';
 
+        $slug = basename($filePath, '.md');
         // Extract YAML frontmatter block
         if (preg_match('/^---\s*(.*?)\s*---\s*(.*)/s', $content, $matches)) {
             $frontmatter   = $matches[1];
@@ -32,6 +33,12 @@ if (is_dir($content_dir)) {
                 $title = $m[1];
             } elseif (preg_match('/title:\s*(.*)/', $frontmatter, $m)) {
                 $title = trim($m[1], " '\"");
+            }
+
+            if (preg_match('/slug:\s*"(.*?)"/', $frontmatter, $m)) {
+                $slug = $m[1];
+            } elseif (preg_match('/slug:\s*(.*)/', $frontmatter, $m)) {
+                $slug = trim($m[1], " '\"");
             }
 
             if (preg_match('/date:\s*"(.*?)"/', $frontmatter, $m)) {
@@ -48,7 +55,7 @@ if (is_dir($content_dir)) {
 
         $posts[] = [
             'id'          => md5(basename($filePath)),
-            'slug'        => basename($filePath, '.md'),
+            'slug'        => $slug,
             'title'       => $title,
             'date'        => $date,
             'category'    => $category,

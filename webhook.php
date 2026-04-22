@@ -64,9 +64,28 @@ function php_sync_archive($url, $target) {
     $ext = (str_contains($url, 'zipball') || str_ends_with($url, '.zip')) ? '.zip' : '.tar.gz';
     $temp_file = sys_get_temp_dir() . '/blogee_' . md5($url) . $ext;
     
-    $context = stream_context_create(["http" => ["header" => "User-Agent: Blogee-CMS-Sync\r\nAccept: application/vnd.github+json\r\n", "follow_location" => 1, "timeout" => 60]]);
+    $token = getenv('GITHUB_TOKEN');
+    $headers = [
+        "User-Agent: Blogee-CMS-Sync",
+        "Accept: application/vnd.github+json"
+    ];
+    if ($token) $headers[] = "Authorization: Bearer $token";
+
+    $context = stream_context_create(["http" => [
+        "method" => "GET",
+        "header" => implode("\r\n", $headers) . "\r\n",
+        "follow_location" => 1,
+        "timeout" => 60
+    ]]);
+
     $data = @file_get_contents($url, false, $context);
     if ($data === false) return "Error: Failed to download archive from $url.";
+    
+    // Check if we accidentally downloaded an HTML page (like a login or error page)
+    if (str_starts_with(trim($data), '<!DOCTYPE html>') || str_starts_with(trim($data), '<html')) {
+        return "Error: Downloaded an HTML page instead of an archive. Check if repo is private or URL is wrong.";
+    }
+    
     file_put_contents($temp_file, $data);
 
     $result = "Files synchronized:\n";

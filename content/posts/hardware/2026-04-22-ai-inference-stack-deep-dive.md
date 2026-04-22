@@ -1,6 +1,7 @@
 ---
 title: "The AI Inference Stack: From Silicon to Intelligence"
 date: "2026-04-22"
+slug: "ai-inference-stack-deep-dive"
 tags: ["gpu", "cuda", "llm", "hardware"]
 ---
 

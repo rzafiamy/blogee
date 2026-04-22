@@ -123,10 +123,10 @@
                         <span class="post-date">${post.date}</span>
                         <span class="post-tag">▣ ${post.category}</span>
                     </header>
-                    <h2 class="post-title"><a href="#" onclick="openPost('${post.id}')">${post.title}</a></h2>
+                    <h2 class="post-title"><a href="#/${post.slug}" onclick="openPostBySlug('${post.slug}'); return false;">${post.title}</a></h2>
                     <p class="post-excerpt">${post.rawMarkdown.substring(0, 180)}...</p>
                     <footer class="item-footer">
-                        <a href="#" class="read-more" onclick="openPost('${post.id}')">▶ ACCESS_LOG</a>
+                        <a href="#/${post.slug}" class="read-more" onclick="openPostBySlug('${post.slug}'); return false;">▶ ACCESS_LOG</a>
                     </footer>
                 </article>
             `).join('');
@@ -136,7 +136,7 @@
         function renderLatest(posts) {
             const list = document.getElementById('latest-list');
             list.innerHTML = posts.slice(0, 3).map(post => `
-                <div class="scan-item" onclick="openPost('${post.id}')">
+                <div class="scan-item" onclick="openPostBySlug('${post.slug}')">
                     <span class="scan-date">${post.date}</span>
                     <h4>${post.title}</h4>
                 </div>
@@ -147,13 +147,33 @@
             const list = document.getElementById('category-list');
             const cats = [...new Set(posts.map(p => p.category))];
             if (cats.length > 0) {
-                list.innerHTML = cats.map(c => `<li><a href="#">/ ${c.toLowerCase()}</a></li>`).join('');
+                list.innerHTML = cats.map(c => `<li><a href="#" onclick="filterByCategory('${c}'); return false;">/ ${c.toLowerCase()}</a></li>`).join('') + 
+                                `<li><a href="#" onclick="renderPosts(allPosts); return false;">/ all_posts</a></li>`;
             }
         }
 
-        function openPost(id) {
-            const post = allPosts.find(p => p.id === id);
+        function filterByCategory(cat) {
+            const filtered = allPosts.filter(p => p.category === cat);
+            renderPosts(filtered);
+        }
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allPosts.filter(p => 
+                p.title.toLowerCase().includes(query) || 
+                p.rawMarkdown.toLowerCase().includes(query) ||
+                p.tags.some(t => t.toLowerCase().includes(query))
+            );
+            renderPosts(filtered);
+        });
+
+        function openPostBySlug(slug) {
+            const post = allPosts.find(p => p.slug === slug);
             if (!post) return;
+            
+            // Update URL hash
+            window.location.hash = `/${slug}`;
+            
             const modal = document.getElementById('post-modal');
             const body = document.getElementById('modal-body');
             body.innerHTML = `
@@ -169,21 +189,37 @@
             document.body.style.overflow = "hidden";
         }
 
-        document.querySelector('.close-modal').onclick = () => {
+        function checkHash() {
+            const hash = window.location.hash;
+            if (hash.startsWith('#/')) {
+                const slug = hash.substring(2);
+                // Wait for posts to be loaded
+                if (allPosts.length > 0) {
+                    openPostBySlug(slug);
+                } else {
+                    // Try again in 100ms
+                    setTimeout(checkHash, 100);
+                }
+            } else {
+                closeModal();
+            }
+        }
+
+        function closeModal() {
             document.getElementById('post-modal').style.display = "none";
             document.body.style.overflow = "auto";
-        };
-
-        window.onclick = (e) => {
-            if (e.target == document.getElementById('post-modal')) {
-                document.getElementById('post-modal').style.display = "none";
-                document.body.style.overflow = "auto";
+            if (window.location.hash.startsWith('#/')) {
+                history.pushState("", document.title, window.location.pathname + window.location.search);
             }
-        };
+        }
 
-        document.addEventListener('keydown', (e) => { if (e.key === "Escape") document.querySelector('.close-modal').onclick(); });
+        window.onhashchange = checkHash;
 
-        document.addEventListener('DOMContentLoaded', fetchPosts);
+        document.querySelector('.close-modal').onclick = closeModal;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPosts().then(checkHash);
+        });
     </script>
 </body>
 
