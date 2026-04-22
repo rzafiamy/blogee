@@ -226,43 +226,81 @@ h1 {
     margin-bottom: 5px;
 }
 
-/* MODAL */
-.modal {
-    display: none;
-    position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: rgba(255,255,255,0.95);
-    z-index: 2000;
-    overflow-y: auto;
+/* POST DETAIL (IN-PANEL) */
+.post-detail {
+    animation: fadeIn 0.4s ease-out;
 }
 
-.modal-content {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 40px;
-    background: #fff;
-    border: 6px solid var(--terminal-black);
-    color: var(--text-primary);
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.detail-header {
+    margin-bottom: 40px;
+    border-bottom: 4px double var(--primary-color);
+    padding-bottom: 25px;
 }
 
-.close-modal {
-    position: fixed;
-    top: 30px; right: 40px;
-    background: var(--text-primary);
-    color: white;
-    border: none;
-    padding: 6px 12px;
+.back-link {
+    display: inline-block;
+    font-family: 'VT323', monospace;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: 15px;
+    padding: 2px 8px;
+    border: 1px solid var(--border-color);
+}
+
+.back-link:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.detail-header .date {
+    display: block;
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.detail-header h1 {
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--primary-color);
+}
+
+.article-body {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    line-height: 1.6;
 }
 
-.modal-post-header { margin-bottom: 30px; border-bottom: 4px double var(--primary-color); padding-bottom: 20px; }
-.modal-post-header h1 { font-family: 'VT323', monospace; font-weight: 400; font-size: 3.5rem; color: var(--primary-color); line-height: 1; }
-.modal-post-header .date { font-family: 'VT323', monospace; font-size: 1.2rem; color: var(--secondary-color); }
+.article-body h1, .article-body h2, .article-body h3 {
+    font-family: 'VT323', monospace;
+    margin: 30px 0 15px;
+    color: var(--secondary-color);
+}
 
-.modal-article-content { font-size: 1.4rem; line-height: 1.4; color: var(--text-primary); }
-.modal-article-content img { max-width: 100%; border: 4px solid var(--primary-color); margin: 30px 0; }
+.article-body p { margin-bottom: 20px; }
+.article-body img { max-width: 100%; border: 4px solid var(--primary-color); margin: 30px 0; }
+
+.detail-footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.tags {
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.tag {
+    color: var(--primary-color);
+    margin-right: 10px;
+}
 
 /* FOOTER */
 .main-footer { padding: 40px 0; border-top: 6px solid var(--primary-color); background: #fff; }
@@ -274,41 +312,6 @@ h1 {
 /* LOADING */
 .pixel-loader { width: 32px; height: 32px; border: 4px solid var(--primary-color); border-right-color: transparent; animation: rotate 0.5s infinite steps(4); }
 @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.modal::after {
-    content: " ";
-    display: block;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
-    z-index: 2001;
-    background-size: 100% 3px;
-    pointer-events: none;
-}
-
-@keyframes flicker {
-    0% { opacity: 0.273; }
-    5% { opacity: 0.100; }
-    10% { opacity: 0.233; }
-    15% { opacity: 0.150; }
-    20% { opacity: 0.279; }
-    25% { opacity: 0.120; }
-    30% { opacity: 0.239; }
-    35% { opacity: 0.156; }
-    40% { opacity: 0.222; }
-    45% { opacity: 0.144; }
-    50% { opacity: 0.278; }
-    55% { opacity: 0.123; }
-    60% { opacity: 0.222; }
-    65% { opacity: 0.155; }
-    70% { opacity: 0.278; }
-    75% { opacity: 0.123; }
-    80% { opacity: 0.222; }
-    85% { opacity: 0.155; }
-    90% { opacity: 0.278; }
-    95% { opacity: 0.123; }
-    100% { opacity: 0.222; }
-}
 
 @media (max-width: 900px) {
     .content-grid { grid-template-columns: 1fr; }

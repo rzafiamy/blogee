@@ -77,13 +77,7 @@
         </footer>
     </div>
 
-    <!-- MODAL -->
-    <div id="post-modal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal">✖ TERMINATE_SESSION</button>
-            <div id="modal-body"></div>
-        </div>
-    </div>
+    <!-- REMOVED MODAL HTML -->
 
     <script>
         let allPosts = [];
@@ -93,12 +87,10 @@
                 const response = await fetch('api.php');
                 if (!response.ok) throw new Error('Network response was not ok');
                 allPosts = await response.json();
-                const activeQuery = document.getElementById('search-input').value;
-                if (!activeQuery) {
-                    renderPosts(allPosts);
-                } else {
-                    handleSearch();
-                }
+                
+                // Initial routing
+                checkHash();
+                
                 renderLatest(allPosts);
                 renderCategories(allPosts);
             } catch (error) {
@@ -107,7 +99,7 @@
             }
         }
 
-        function renderPosts(posts, isSearchResult = false) {
+        function renderFeed(posts, isSearchResult = false) {
             const app = document.getElementById('app');
             if (posts.length === 0) {
                 app.innerHTML = isSearchResult ? `
@@ -133,20 +125,45 @@
                         <span class="post-date">${post.date}</span>
                         <span class="post-tag">▣ ${post.category}</span>
                     </header>
-                    <h2 class="post-title"><a href="#/${post.path}" onclick="openPostByPath('${post.path}'); return false;">${post.title}</a></h2>
+                    <h2 class="post-title"><a href="#/${post.path}">${post.title}</a></h2>
                     <p class="post-excerpt">${post.rawMarkdown.substring(0, 180)}...</p>
                     <footer class="item-footer">
-                        <a href="#/${post.path}" class="read-more" onclick="openPostByPath('${post.path}'); return false;">▶ ACCESS_LOG</a>
+                        <a href="#/${post.path}" class="read-more">▶ ACCESS_LOG</a>
                     </footer>
                 </article>
             `).join('');
         }
 
+        function renderPostDetail(path) {
+            const post = allPosts.find(p => p.path === path);
+            const app = document.getElementById('app');
+            if (!post) {
+                app.innerHTML = `<div class="post-item">Error: Post not found in database.</div>`;
+                return;
+            }
+            
+            app.innerHTML = `
+                <article class="post-detail">
+                    <header class="detail-header">
+                        <a href="#" class="back-link">◀ BACK_TO_FEED</a>
+                        <span class="date">${post.date} | ▣ ${post.category}</span>
+                        <h1>${post.title}</h1>
+                    </header>
+                    <div class="article-body">
+                        ${marked.parse(post.rawMarkdown).replace(/(src|href)="\.\/assets\/([^"]+)"/g, '$1="/content/assets/$2"')}
+                    </div>
+                    <footer class="detail-footer">
+                        <div class="tags">TAGS: ${post.tags.map(t => `<span class="tag">#${t}</span>`).join(' ')}</div>
+                    </footer>
+                </article>
+            `;
+            window.scrollTo(0, 0);
+        }
 
         function renderLatest(posts) {
             const list = document.getElementById('latest-list');
             list.innerHTML = posts.slice(0, 3).map(post => `
-                <div class="scan-item" onclick="openPostByPath('${post.path}')">
+                <div class="scan-item" onclick="window.location.hash = '#/${post.path}'">
                     <span class="scan-date">${post.date}</span>
                     <h4>${post.title}</h4>
                 </div>
@@ -158,21 +175,23 @@
             const cats = [...new Set(posts.map(p => p.category))];
             if (cats.length > 0) {
                 list.innerHTML = cats.map(c => `<li><a href="#" onclick="filterByCategory('${c}'); return false;">/ ${c.toLowerCase()}</a></li>`).join('') + 
-                                `<li><a href="#" onclick="renderPosts(allPosts); return false;">/ all_posts</a></li>`;
+                                `<li><a href="#" onclick="window.location.hash = ''; return false;">/ all_posts</a></li>`;
             }
         }
 
         function filterByCategory(cat) {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const filtered = allPosts.filter(p => p.category === cat && (
-                p.title.toLowerCase().includes(query) || 
-                p.rawMarkdown.toLowerCase().includes(query)
-            ));
-            renderPosts(filtered, query.length > 0);
+            window.location.hash = ''; 
+            const filtered = allPosts.filter(p => p.category === cat);
+            renderFeed(filtered);
         }
 
         function handleSearch() {
+            window.location.hash = ''; 
             const query = document.getElementById('search-input').value.toLowerCase();
+            if (!query) {
+                renderFeed(allPosts);
+                return;
+            }
             const filtered = allPosts.filter(p => 
                 p.title.toLowerCase().includes(query) || 
                 p.rawMarkdown.toLowerCase().includes(query) ||
@@ -180,62 +199,28 @@
                 p.slug.toLowerCase().includes(query) ||
                 p.tags.some(t => t.toLowerCase().includes(query))
             );
-            renderPosts(filtered, true);
-        }
-
-        function openPostByPath(path) {
-            const post = allPosts.find(p => p.path === path);
-            if (!post) return;
-            
-            // Update URL hash
-            window.location.hash = `/${path}`;
-            
-            const modal = document.getElementById('post-modal');
-            const body = document.getElementById('modal-body');
-            body.innerHTML = `
-                <header class="modal-post-header">
-                    <span class="date">${post.date}</span>
-                    <h1>${post.title}</h1>
-                </header>
-                <div class="modal-article-content">
-                    ${marked.parse(post.rawMarkdown).replace(/(src|href)="\.\/assets\/([^"]+)"/g, '$1="/content/assets/$2"')}
-                </div>
-            `;
-            modal.style.display = "block";
-            document.body.style.overflow = "hidden";
+            renderFeed(filtered, true);
         }
 
         function checkHash() {
             const hash = window.location.hash;
             if (hash.startsWith('#/')) {
                 const path = hash.substring(2);
-                // Wait for posts to be loaded
                 if (allPosts.length > 0) {
-                    openPostByPath(path);
+                    renderPostDetail(path);
                 } else {
-                    // Try again in 100ms
                     setTimeout(checkHash, 100);
                 }
             } else {
-                closeModal();
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('post-modal').style.display = "none";
-            document.body.style.overflow = "auto";
-            if (window.location.hash.startsWith('#/')) {
-                history.pushState("", document.title, window.location.pathname + window.location.search);
+                if (allPosts.length > 0) renderFeed(allPosts);
             }
         }
 
         window.onhashchange = checkHash;
 
-        document.querySelector('.close-modal').onclick = closeModal;
-
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('search-input').addEventListener('input', handleSearch);
-            fetchPosts().then(checkHash);
+            fetchPosts();
         });
     </script>
 </body>
