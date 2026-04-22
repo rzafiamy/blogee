@@ -27,12 +27,12 @@ sudo chown -R www-data:www-data content
 ```
 
 #### Option B: If you DON'T have Git (Archive Sync)
-If your server lacks `git`, you can use the **Archive Sync** method:
+If your server lacks `git` or you prefer a lightweight deployment, use the **Archive Sync** method:
 1. Create the content directory: `mkdir content`
 2. Ensure permissions: `sudo chown -R www-data:www-data content`
 3. Configure your `.env` (see Step 4) to use `SYNC_METHOD=archive`.
-> [!TIP]
-> Archive Sync now uses pure PHP (`ZipArchive`). No `curl`, `tar`, or `shell_exec` required! Use the GitHub `/zipball/main` URL for best compatibility.
+> [!IMPORTANT]
+> This method uses pure PHP (`ZipArchive`). No `curl`, `tar`, or `shell_exec` required! It is designed for maximum compatibility across shared hosting and restricted environments.
 
 ---
 
@@ -46,14 +46,23 @@ If your server lacks `git`, you can use the **Archive Sync** method:
    ```env
    GITHUB_WEBHOOK_SECRET=your_generated_secret
    
+   # Remote Webhook URL (for the publish.sh script)
+   BLOG_WEBHOOK_URL=https://your-domain.com/webhook.php
+
    # For No-Git Servers:
    SYNC_METHOD=archive
-   REPO_ARCHIVE_URL=https://github.com/your-username/your-content-repo/tarball/main
+   # Use the GitHub API URL for maximum reliability
+   REPO_ARCHIVE_URL=https://api.github.com/repos/USER/REPO/zipball/main
+   
+   # Optional: Required if your repo is private
+   GITHUB_TOKEN=your_personal_access_token
    ```
 4. **Permissions**: `chmod 600 .env`
 
+---
+
 ### 5. Setup GitHub Webhook
-1. Go to your **Content Repo** (not the engine repo) on GitHub.
+1. Go to your **Content Repo** (or the engine repo if you are using a single-repo structure) on GitHub.
 2. **Settings > Webhooks > Add webhook**.
 3. **Payload URL**: `https://yourdomain.com/webhook.php`
 4. **Content type**: `application/json`
@@ -67,12 +76,20 @@ Apply the configuration from `nginx.conf.example` to your server block to protec
 
 ## 🛠️ Troubleshooting
 
-### "Failed to open directory" / 404 on Posts
-If you see a "NO ACCESS LOGS FOUND" message or encounter PHP errors in your logs:
-1. **Check Directory Existence**: Verify that `content/posts` exists and contains at least one `.md` file.
-2. **Permissions**: Ensure Nginx/PHP-FPM (`www-data`) has read/write access to the `content` folder.
-3. **Webhook Logs**: Check `webhook-pull.log` in the root directory for any `git pull` or `tar/curl` errors.
-4. **Archive Sync Errors**: Ensure `REPO_ARCHIVE_URL` is a direct link to a `.tar.gz` archive (e.g., GitHub's `/tarball/main`).
+### "Sync failed: Error: internal corruption of phar"
+This occurs when PHP tries to open an archive with the wrong extension. 
+- **Fix**: Ensure your `REPO_ARCHIVE_URL` in `.env` contains the word `zipball`. The engine will automatically handle the file extension.
+
+### "Sync failed: Error: Downloaded an HTML page"
+This means GitHub is redirecting the request to a login page (private repo) or an error page.
+- **Fix**: 
+  1. Use the API URL: `api.github.com/repos/USER/REPO/zipball/main`.
+  2. If the repo is private, ensure `GITHUB_TOKEN` is set in `.env`.
+  3. Ensure your server allows outbound connections to `api.github.com`.
+
+### "403 Unauthorized"
+The HMAC signature verification failed.
+- **Fix**: Check that `GITHUB_WEBHOOK_SECRET` is identical in both your `.env` and your GitHub Webhook settings.
 
 ---
 
@@ -81,7 +98,8 @@ If you see a "NO ACCESS LOGS FOUND" message or encounter PHP errors in your logs
 - **Hidden File Protection**: Nginx is configured to block access to all dotfiles (like `.env` and `.git`).
 - **HMAC-SHA256 Validation**: Every webhook request is cryptographically signed by GitHub and verified by `webhook.php`.
 - **Timing Attack Prevention**: Uses `hash_equals()` for constant-time signature comparison.
-- **PHP Lockdown**: PHP execution is disabled inside the `/content` directory to prevent malicious uploads from running code.
+- **PHP Lockdown**: PHP execution is disabled inside the `/content` directory.
+- **User-Agent Shielding**: The engine specifically identifies as `Blogee-CMS-Sync` to satisfy GitHub's API requirements.
 
 ## ✍️ Content Specification
 
