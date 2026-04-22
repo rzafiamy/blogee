@@ -139,3 +139,8 @@ This project uses a dual-licensing model to protect both the software and the cr
 
 - **Source Code**: Licensed under the [Apache License 2.0](LICENSE-CODE). This applies to all PHP, HTML, CSS, and JS files in the engine.
 - **Blog Content**: Licensed under the [GNU General Public License v3.0](LICENSE-CONTENT). This applies to all Markdown files and assets within the `content/` directory.
+
+---
+
+## 📚 Documentation
+- [API Reference](API.md) - Full documentation on how to read and publish via API.
