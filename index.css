@@ -472,15 +472,44 @@ h1 {
 }
 
 .article-body pre {
-    background: #1e1e1e !important; /* Force dark background for syntax colors */
+    background: #1e1e1e !important;
     padding: 1.5rem;
+    padding-top: 2.8rem;
     margin: 2rem 0;
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 480px;
     min-width: 0;
     max-width: 100%;
     border: 2px solid var(--primary-color);
     box-shadow: 6px 6px 0 var(--secondary-color);
     border-radius: 4px;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    color: var(--accent-color);
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    padding: 1px 10px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.15s ease;
+    z-index: 10;
+}
+
+.copy-code-btn:hover {
+    background: var(--accent-color);
+    color: #1e1e1e;
+}
+
+.copy-code-btn.copied {
+    color: #6fcf97;
+    border-color: #6fcf97;
 }
 
 .article-body pre code {
